@@ -1,0 +1,162 @@
+[
+  {
+    "Sourcefile": null,
+    "Include": "",
+    "Includepath": "/home/kafcoppelia/.arduino15/packages/m5stack/hardware/esp32/2.0.3/cores/esp32"
+  },
+  {
+    "Sourcefile": null,
+    "Include": "",
+    "Includepath": "/home/kafcoppelia/.arduino15/packages/m5stack/hardware/esp32/2.0.3/variants/m5stick_c_plus"
+  },
+  {
+    "Sourcefile": "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/demo.ino.cpp",
+    "Include": "M5StickCPlus.h",
+    "Includepath": "/home/kafcoppelia/APPLICATIONS/Arduino/libraries/M5StickCPlus/src"
+  },
+  {
+    "Sourcefile": "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/demo.ino.cpp",
+    "Include": "Wire.h",
+    "Includepath": "/home/kafcoppelia/.arduino15/packages/m5stack/hardware/esp32/2.0.3/libraries/Wire/src"
+  },
+  {
+    "Sourcefile": "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/demo.ino.cpp",
+    "Include": "SPI.h",
+    "Includepath": "/home/kafcoppelia/.arduino15/packages/m5stack/hardware/esp32/2.0.3/libraries/SPI/src"
+  },
+  {
+    "Sourcefile": "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/demo.ino.cpp",
+    "Include": "FS.h",
+    "Includepath": "/home/kafcoppelia/.arduino15/packages/m5stack/hardware/esp32/2.0.3/libraries/FS/src"
+  },
+  {
+    "Sourcefile": "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/demo.ino.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/src/ledarray.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/src/sandglass.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/src/user.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/src/utils.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/home/kafcoppelia/APPLICATIONS/Arduino/libraries/M5StickCPlus/src/AXP192.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/home/kafcoppelia/APPLICATIONS/Arduino/libraries/M5StickCPlus/src/Fonts/Font16.c",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/home/kafcoppelia/APPLICATIONS/Arduino/libraries/M5StickCPlus/src/Fonts/Font32rle.c",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/home/kafcoppelia/APPLICATIONS/Arduino/libraries/M5StickCPlus/src/Fonts/Font64rle.c",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/home/kafcoppelia/APPLICATIONS/Arduino/libraries/M5StickCPlus/src/Fonts/Font72rle.c",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/home/kafcoppelia/APPLICATIONS/Arduino/libraries/M5StickCPlus/src/Fonts/Font7srle.c",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/home/kafcoppelia/APPLICATIONS/Arduino/libraries/M5StickCPlus/src/Fonts/glcdfont.c",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/home/kafcoppelia/APPLICATIONS/Arduino/libraries/M5StickCPlus/src/M5Display.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/home/kafcoppelia/APPLICATIONS/Arduino/libraries/M5StickCPlus/src/M5StickCPlus.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/home/kafcoppelia/APPLICATIONS/Arduino/libraries/M5StickCPlus/src/RTC.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/home/kafcoppelia/APPLICATIONS/Arduino/libraries/M5StickCPlus/src/utility/Button.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/home/kafcoppelia/APPLICATIONS/Arduino/libraries/M5StickCPlus/src/utility/In_eSPI.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/home/kafcoppelia/APPLICATIONS/Arduino/libraries/M5StickCPlus/src/utility/MPU6886.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/home/kafcoppelia/APPLICATIONS/Arduino/libraries/M5StickCPlus/src/utility/MahonyAHRS.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/home/kafcoppelia/APPLICATIONS/Arduino/libraries/M5StickCPlus/src/utility/Speaker.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/home/kafcoppelia/APPLICATIONS/Arduino/libraries/M5StickCPlus/src/utility/Sprite.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/home/kafcoppelia/APPLICATIONS/Arduino/libraries/M5StickCPlus/src/utility/qrcode.c",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/home/kafcoppelia/.arduino15/packages/m5stack/hardware/esp32/2.0.3/libraries/Wire/src/Wire.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/home/kafcoppelia/.arduino15/packages/m5stack/hardware/esp32/2.0.3/libraries/SPI/src/SPI.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/home/kafcoppelia/.arduino15/packages/m5stack/hardware/esp32/2.0.3/libraries/FS/src/FS.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/home/kafcoppelia/.arduino15/packages/m5stack/hardware/esp32/2.0.3/libraries/FS/src/vfs_api.cpp",
+    "Include": "",
+    "Includepath": null
+  }
+]

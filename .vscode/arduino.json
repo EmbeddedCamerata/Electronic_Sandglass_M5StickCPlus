@@ -1,0 +1,8 @@
+{
+    "configuration": "PartitionScheme=default,CPUFreq=240,UploadSpeed=1500000,DebugLevel=info",
+    "board": "m5stack:esp32:m5stick-c-plus",
+    "programmer": "m5stack:esptool",
+    "port": "/dev/ttyUSB0",
+    "sketch": "demo/demo.ino",
+    "output": "demo/build"
+}
