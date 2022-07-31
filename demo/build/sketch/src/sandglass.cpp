@@ -4,7 +4,14 @@
 RTC_TimeTypeDef TimeStruct;
 
 Sandglass::Sandglass():isActivated(0) {
+	Sandglass::init();
+}
 
+void Sandglass::init(void) {
+	set_time.mins = 0;
+	set_time.secs = 0;
+	rest_time.mins = 0;
+	rest_time.secs = 0;
 }
 
 void Sandglass::start(Countdown_TypeDef* CountdownStruct) {
@@ -33,11 +40,18 @@ void Sandglass::start(Countdown_TypeDef* CountdownStruct) {
 
 void Sandglass::update(void) {
 	M5.Rtc.GetTime(&TimeStruct);
-	now_time.mins = TimeStruct.Minutes;
-	now_time.secs = TimeStruct.Seconds;
 
-	Sandglass::Show_Countdown(&now_time);
-	if ((now_time.mins > set_time.mins) or ((now_time.mins == set_time.mins) and (now_time.secs >= set_time.secs))) {
+	if (TimeStruct.Seconds > set_time.secs) {
+		rest_time.secs = set_time.secs + 60 - TimeStruct.Seconds;
+		rest_time.mins = set_time.mins - TimeStruct.Minutes - 1;
+	}
+	else {
+		rest_time.secs = set_time.secs - TimeStruct.Seconds;
+		rest_time.mins = set_time.mins - TimeStruct.Minutes;
+	}
+
+	Sandglass::Show_RestTime();
+	if (rest_time.mins == 0 and rest_time.secs == 0) {
 		M5.Lcd.setCursor(10, 50);
     	M5.Lcd.printf("Time up!\n");
 		Sandglass::stop();
@@ -49,31 +63,28 @@ void Sandglass::stop(void) {
     isActivated = false;
 	set_time.mins = 0;
 	set_time.secs = 0;
-	now_time.mins = 0;
-	now_time.secs = 0;
+	rest_time.mins = 0;
+	rest_time.secs = 0;
     // Then go to ledarray
+}
+
+void Sandglass::Set_Countdown(Countdown_TypeDef* CountdownStruct) {
+    set_time.mins = CountdownStruct->mins;
+    set_time.secs = CountdownStruct->secs;
+}
+
+void Sandglass::Show_RestTime(void) {
+	M5.Lcd.setCursor(10, 70);
+    M5.Lcd.printf("%02d mins, %02d secs left\n", rest_time.mins, rest_time.secs);
+}
+
+void Sandglass::show_settime(Countdown_TypeDef* CountdownStruct) {
+    M5.Lcd.setCursor(10, 10);
+    M5.Lcd.printf("%02d mins, %02d secs left\n", CountdownStruct->mins, CountdownStruct->secs);
 }
 
 bool Sandglass::is_Activated(void) {
     return isActivated;
-}
-
-void Sandglass::Set_Countdown(Countdown_TypeDef* CountdownStruct) {
-    CountdownStruct->mins = set_time.mins;
-    CountdownStruct->secs = set_time.secs;
-
-	M5.Lcd.setCursor(10, 70);
-	M5.Lcd.printf("Set %02d %02d!\n", set_time.mins, set_time.secs);
-}
-
-void Sandglass::Get_Countdown(Countdown_TypeDef* CountdownStruct) {
-    now_time.mins = CountdownStruct->mins;
-    now_time.secs = CountdownStruct->secs;
-}
-
-void Sandglass::Show_Countdown(Countdown_TypeDef* CountdownStruct) {
-    M5.Lcd.setCursor(10, 10);
-    M5.Lcd.printf("%02d mins, %02d secs left\n", CountdownStruct->mins, CountdownStruct->secs);
 }
 
 uint16_t Sandglass::Get_TotalTime(void) {

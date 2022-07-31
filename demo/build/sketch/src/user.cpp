@@ -53,7 +53,7 @@ static void Key_Handle(void) {
                 break; // ?
             }
         }
-        sandglass.Show_Countdown(&CountdownStruct);
+        sandglass.show_settime(&CountdownStruct);
         // If idle, can go into low-cost mode
         delay(50);
     }

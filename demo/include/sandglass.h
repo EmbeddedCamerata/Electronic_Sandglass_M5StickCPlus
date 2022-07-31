@@ -17,15 +17,18 @@ class Sandglass {
     // void resume(void);
     void update(void);
     void stop(void);
-    void Set_Countdown(Countdown_TypeDef* CountdownStruct);
-    void Get_Countdown(Countdown_TypeDef* CountdownStruct);
-    void Show_Countdown(Countdown_TypeDef* CountdownStruct);
+    void Show_Countdown();
+    void show_settime(Countdown_TypeDef* CountdownStruct);
+    void Show_RestTime(void);
     uint16_t Get_TotalTime(void);
     bool is_Activated(void);
 
     private:
+    void init(void);
+    void Set_Countdown(Countdown_TypeDef* CountdownStruct);
+
     bool isActivated;
-    Countdown_TypeDef now_time;
+    Countdown_TypeDef rest_time;
     Countdown_TypeDef set_time;
 };
 
