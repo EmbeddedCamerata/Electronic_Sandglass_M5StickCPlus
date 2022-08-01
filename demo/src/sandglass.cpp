@@ -2,11 +2,12 @@
 
 RTC_TimeTypeDef TimeStruct;
 
-Sandglass::Sandglass():isActivated(0) {
+Sandglass::Sandglass() {
 	Sandglass::init();
 }
 
 void Sandglass::init(void) {
+	isActivated = false;
 	set_time.mins = 0;
 	set_time.secs = 0;
 	rest_time.mins = 0;
@@ -24,8 +25,6 @@ void Sandglass::start(Countdown_TypeDef* CountdownStruct) {
     TimeStruct.Seconds = 0;
     M5.Rtc.SetTime(&TimeStruct);
 
-	M5.Lcd.setCursor(10, 30);
-	M5.Lcd.printf("Start\n");
     // Then go to ledarray
 }
 
@@ -73,13 +72,13 @@ void Sandglass::Set_Countdown(Countdown_TypeDef* CountdownStruct) {
 }
 
 void Sandglass::Show_RestTime(void) {
-	M5.Lcd.setCursor(10, 70);
+	M5.Lcd.setCursor(10, 30);
     M5.Lcd.printf("%02d mins, %02d secs left\n", rest_time.mins, rest_time.secs);
 }
 
 void Sandglass::show_settime(Countdown_TypeDef* CountdownStruct) {
     M5.Lcd.setCursor(10, 10);
-    M5.Lcd.printf("%02d mins, %02d secs left\n", CountdownStruct->mins, CountdownStruct->secs);
+    M5.Lcd.printf("%02d mins, %02d secs set\n", CountdownStruct->mins, CountdownStruct->secs);
 }
 
 bool Sandglass::is_Activated(void) {

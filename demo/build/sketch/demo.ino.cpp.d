@@ -219,5 +219,4 @@
  /home/kafcoppelia/.arduino15/packages/m5stack/hardware/esp32/2.0.3/cores/esp32/esp32-hal-dac.h \
  /home/kafcoppelia/APPLICATIONS/Arduino/libraries/M5StickCPlus/src/RTC.h \
  /home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/include/user.h \
- /home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/include/sandglass.h \
- /home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/include/ledarray.h
+ /home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/include/sandglass.h

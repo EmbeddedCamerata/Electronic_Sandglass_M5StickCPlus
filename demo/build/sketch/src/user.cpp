@@ -1,6 +1,7 @@
 #line 1 "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/src/user.cpp"
 #include <M5StickCPlus.h>
 #include "../include/user.h"
+#include "../include/ledmatrix.h"
 
 Sandglass sandglass;
 Countdown_TypeDef CountdownStruct = {.mins = 0, .secs = 0};
@@ -10,21 +11,22 @@ static void Key_Handle(void);
 
 void User_Setup(void) {
     pinMode(M5_LED, OUTPUT);
-    ledarray_init();
+    LedMatrix_Init();
     Lcd_Setup();
 }
 
 void User_Loop(void) {
-    Key_Handle();
+    // Key_Handle();
 
-    while (1) {
-        sandglass.update();
-        if (sandglass.is_Activated() == false) {
-            break;
-        }
-    }
-    led_heartbeat();
-    delay(1000);
+    // while (1) {
+    //     sandglass.update();
+    //     if (sandglass.is_Activated() == false) {
+    //         break;
+    //     }
+    // }
+    // led_heartbeat();
+    // delay(1000);
+    ledmatrix_test();
 }
 
 static void Key_Handle(void) {
@@ -36,13 +38,28 @@ static void Key_Handle(void) {
                 break;
             }
             else if (M5.BtnA.wasReleased()) {
-                CountdownStruct.mins += 1;
+                if (CountdownStruct.mins == 10) {
+                    CountdownStruct.mins = 0;
+                }
+                else {
+                    CountdownStruct.mins += 1;
+                }
             }
             else if (M5.BtnB.wasReleased()) {
-                CountdownStruct.secs += 1;
+                if (CountdownStruct.secs == 59) {
+                    CountdownStruct.secs = 0;
+                }
+                else {
+                    CountdownStruct.secs += 1;
+                }
             }
             else if (M5.BtnB.wasReleasefor(800)) {
-                CountdownStruct.secs += 10;
+                if (CountdownStruct.secs >= 50) {
+                    CountdownStruct.secs = 0;
+                }
+                else {
+                    CountdownStruct.secs += 10;
+                }
             }
         }
         else {

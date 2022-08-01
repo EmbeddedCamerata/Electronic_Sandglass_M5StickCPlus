@@ -3,7 +3,6 @@
 #define _SANDGLASS_H_
 
 #include <M5StickCPlus.h>
-#include "ledarray.h"
 
 typedef struct {
     uint8_t mins;

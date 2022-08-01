@@ -220,4 +220,7 @@
  /home/kafcoppelia/APPLICATIONS/Arduino/libraries/M5StickCPlus/src/RTC.h \
  /home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/src/../include/user.h \
  /home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/src/../include/sandglass.h \
- /home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/src/../include/ledarray.h
+ /home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/src/../include/ledmatrix.h \
+ /home/kafcoppelia/APPLICATIONS/Arduino/libraries/AceSPI/src/AceSPI.h \
+ /home/kafcoppelia/APPLICATIONS/Arduino/libraries/AceSPI/src/ace_spi/HardSpiInterface.h \
+ /home/kafcoppelia/APPLICATIONS/Arduino/libraries/AceSPI/src/ace_spi/SimpleSpiInterface.h

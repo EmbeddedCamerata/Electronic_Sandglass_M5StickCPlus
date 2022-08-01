@@ -35,7 +35,12 @@
     "Includepath": null
   },
   {
-    "Sourcefile": "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/src/ledarray.cpp",
+    "Sourcefile": "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/src/ledmatrix.cpp",
+    "Include": "AceSPI.h",
+    "Includepath": "/home/kafcoppelia/APPLICATIONS/Arduino/libraries/AceSPI/src"
+  },
+  {
+    "Sourcefile": "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/src/ledmatrix.cpp",
     "Include": "",
     "Includepath": null
   },
