@@ -10,7 +10,8 @@ SpiInterface spiInterface2(LEDMATRIX_RCLK, LEDMATRIX_D, LEDMATRIX_SRCLK2);
 SoftSpi<SpiInterface> ledmatrix_bottom(spiInterface2);
 
 static uint8_t bigheart[8] = {0x00, 0x66, 0xFF, 0xFF, 0x7E, 0x3C, 0x18, 0x00};
-static uint8_t smallheart[8] = {0xFF, 0x7F, 0x3F, 0x1F, 0x0F, 0x07, 0x03, 0x01};
+static uint8_t smallheart[8] = {0x00, 0x24, 0x7E, 0x7E, 0x3C, 0x18, 0x00, 0x00};
+    // 0xFF, 0x7F, 0x3F, 0x1F, 0x0F, 0x07, 0x03, 0x01};
 
 void LedMatrix_Init(void)
 {
@@ -20,13 +21,11 @@ void LedMatrix_Init(void)
     gpio_pullup_dis(MUTEX_PIN);
 }
 
-void ledmatrix_test(void) {
+void LedMatrix_Test(void) {
     ledmatrix_top.full();
-    ledmatrix_bottom.show(smallheart);
+    ledmatrix_bottom.show(bigheart, 1.5);
+    ledmatrix_bottom.show(smallheart, 1.5);
 
-    int i;
-    for (i = 0; i < 15; i ++) {
-        ledmatrix_top.drop_one_layer();
-        delay(1000);
-    }
+    // ledmatrix_top.drop_layers(7);
+    // delay(10000);
 }

@@ -31,12 +31,13 @@ class SoftSpi {
     public:
     explicit SoftSpi(const T_SPII& spiInterface) : mSpiInterface(spiInterface) {};
 
-    void show(uint8_t data[8]) {
+    template <typename _pt>
+    void show(uint8_t data[8], _pt _time) {
         int i;
         for (i = 0; i < 8; i++) {
             LedMatrixStruct.matrix_data[i] = data[i];
         }
-        SoftSpi::refresh();
+        SoftSpi::refresh_for(_time);
     }
 
     void clear(void) {
@@ -57,26 +58,43 @@ class SoftSpi {
         SoftSpi::refresh();
     }
 
-    void drop_one_layer(void) {
-        int i;
-        if (LedMatrixStruct.layer >= 8) {
-            for (i = 7; i > 0; i--) {
-                LedMatrixStruct.matrix_data[i] = LedMatrixStruct.matrix_data[i-1];
+    void drop_layers(int layer) {
+        int i, j;
+        for (i = 0; i < layer; i++) {
+            for (j = 7; j > 0; j--) {
+                LedMatrixStruct.matrix_data[j] = LedMatrixStruct.matrix_data[j-1];
             }
-            LedMatrixStruct.matrix_data[0] = LedMatrixStruct.matrix_data[0] & (0x7F >> (15 - LedMatrixStruct.layer));
+            if (LedMatrixStruct.layer >= 8) {
+                LedMatrixStruct.matrix_data[0] &= (0x7F >> (15 - LedMatrixStruct.layer));
+            }
+            else {
+                LedMatrixStruct.matrix_data[0] = LIGHT_0_MASK;
+            }
             LedMatrixStruct.layer--;
         }
-        
         SoftSpi::refresh();
     }
 
-    void add_one_sand() {
+    void add_layers(int layer) {
 
     }
 
     private:
     LedMatrix_TypeDef LedMatrixStruct;
     const T_SPII mSpiInterface; // copied by value
+
+    /*
+        Refresh for a period of time, unit second. Float or int.
+    */
+    template <typename _pt>
+    void refresh_for(_pt _time) {
+        unsigned long _start_tick = millis();
+        unsigned long _now_tick = millis();
+        while ((_now_tick - _start_tick) < (unsigned long)(_time * 1000)) {
+            SoftSpi::refresh();
+            _now_tick = millis();
+        }
+    }
 
     void refresh(void) {
         int i;
@@ -91,6 +109,6 @@ class SoftSpi {
 };
 
 void LedMatrix_Init(void);
-void ledmatrix_test(void);
+void LedMatrix_Test(void);
 
 #endif

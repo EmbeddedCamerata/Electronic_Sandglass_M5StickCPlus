@@ -26,7 +26,7 @@ void User_Loop(void) {
     // }
     // led_heartbeat();
     // delay(1000);
-    ledmatrix_test();
+    LedMatrix_Test();
 }
 
 static void Key_Handle(void) {
