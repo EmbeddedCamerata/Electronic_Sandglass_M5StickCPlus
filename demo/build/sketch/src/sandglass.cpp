@@ -3,21 +3,21 @@
 
 RTC_TimeTypeDef TimeStruct;
 
-Sandglass::Sandglass() {
-	Sandglass::init();
-}
-
 void Sandglass::init(void) {
-	isActivated = false;
-	set_time.mins = 0;
-	set_time.secs = 0;
-	rest_time.mins = 0;
-	rest_time.secs = 0;
+	this->isActivated = false;
+	this->first_interval = true;
+	this->interval = 0;
+	this->set_time.mins = 0;
+	this->set_time.secs = 0;
+	this->rest_time.mins = 0;
+	this->rest_time.secs = 0;
+
+	this->LedMatrix::init();
 }
 
 void Sandglass::start(Countdown_TypeDef* CountdownStruct) {
-    isActivated = true;
-	Sandglass::Set_Countdown(CountdownStruct);
+    this->isActivated = true;
+	this->Set_Countdown(CountdownStruct);
     
 	// Start at 00:00:00
 	// At some point, for examplt 00:00:30, it passed 30 seconds
@@ -26,55 +26,78 @@ void Sandglass::start(Countdown_TypeDef* CountdownStruct) {
     TimeStruct.Seconds = 0;
     M5.Rtc.SetTime(&TimeStruct);
 
-    // Then go to ledarray
+	this->interval = (int16_t)(this->set_time.mins * 60 + this->set_time.secs) / 15;	// Get the interval of LED display refreshment
+	this->_start_tick = millis();
+	
+    // Then go to led matrix
+	this->LedMatrix::start();
 }
 
 // void Sandglass::pause(void) {
-//     // Then go to ledarray
+//     // Then go to led matrix
 // }
 
 // void Sandglass::resume(void) {
-//     // Then go to ledarray
+//     // Then go to led matrix
 // }
 
 void Sandglass::update(void) {
+	unsigned long _now_tick;
 	M5.Rtc.GetTime(&TimeStruct);
 
-	if (TimeStruct.Seconds > set_time.secs) {
-		rest_time.secs = set_time.secs + 60 - TimeStruct.Seconds;
-		rest_time.mins = set_time.mins - TimeStruct.Minutes - 1;
+	if (TimeStruct.Seconds > this->set_time.secs) {
+		this->rest_time.secs = this->set_time.secs + 60 - TimeStruct.Seconds;
+		this->rest_time.mins = this->set_time.mins - TimeStruct.Minutes - 1;
 	}
 	else {
-		rest_time.secs = set_time.secs - TimeStruct.Seconds;
-		rest_time.mins = set_time.mins - TimeStruct.Minutes;
+		this->rest_time.secs = this->set_time.secs - TimeStruct.Seconds;
+		this->rest_time.mins = this->set_time.mins - TimeStruct.Minutes;
 	}
 
-	Sandglass::Show_RestTime();
-	if (rest_time.mins == 0 and rest_time.secs == 0) {
+	this->Show_RestTime();
+
+	// Then go to led matrix
+	if (this->first_interval) {
+		this->first_interval = false;
+	}
+	this->LedMatrix::refresh();
+
+	_now_tick = millis();
+	if ((_now_tick - this->_start_tick) >= (unsigned long)(this->interval * 1000) and !this->first_interval) {
+		this->LedMatrix::update();
+		this->_start_tick = _now_tick;
+	}
+
+	if (this->rest_time.mins == 0 and this->rest_time.secs == 0) {
 		M5.Lcd.setCursor(10, 50);
     	M5.Lcd.printf("Time up!\n");
-		Sandglass::stop();
+		this->stop();
 	}
-    // Then go to ledarray
 }
 
 void Sandglass::stop(void) {
-    isActivated = false;
-	set_time.mins = 0;
-	set_time.secs = 0;
-	rest_time.mins = 0;
-	rest_time.secs = 0;
-    // Then go to ledarray
+    this->isActivated = false;
+	this->first_interval = true;
+	this->interval = 0;
+	this->set_time.mins = 0;
+	this->set_time.secs = 0;
+	this->rest_time.mins = 0;
+	this->rest_time.secs = 0;
+
+	this->Show_RestTime();
+
+    // Then go to led matrix
+	this->LedMatrix::stop();
 }
 
 void Sandglass::Set_Countdown(Countdown_TypeDef* CountdownStruct) {
-    set_time.mins = CountdownStruct->mins;
-    set_time.secs = CountdownStruct->secs;
+    this->set_time.mins = CountdownStruct->mins;
+    this->set_time.secs = CountdownStruct->secs;
 }
 
 void Sandglass::Show_RestTime(void) {
 	M5.Lcd.setCursor(10, 30);
-    M5.Lcd.printf("%02d mins, %02d secs left\n", rest_time.mins, rest_time.secs);
+    M5.Lcd.printf("%02d mins, %02d secs left\n", this->rest_time.mins, this->rest_time.secs);
 }
 
 void Sandglass::show_settime(Countdown_TypeDef* CountdownStruct) {
@@ -82,10 +105,6 @@ void Sandglass::show_settime(Countdown_TypeDef* CountdownStruct) {
     M5.Lcd.printf("%02d mins, %02d secs set\n", CountdownStruct->mins, CountdownStruct->secs);
 }
 
-bool Sandglass::is_Activated(void) {
-    return isActivated;
-}
-
-uint16_t Sandglass::Get_TotalTime(void) {
-    return (uint16_t)set_time.mins * 60 + set_time.secs;
+bool Sandglass::is_activated(void) {
+    return this->isActivated;
 }

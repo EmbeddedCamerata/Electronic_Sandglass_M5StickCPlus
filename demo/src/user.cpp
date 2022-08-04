@@ -10,28 +10,29 @@ static void Key_Handle(void);
 
 void User_Setup(void) {
     pinMode(M5_LED, OUTPUT);
-    LedMatrix_Init();
+    sandglass.init();
     Lcd_Setup();
 }
 
 void User_Loop(void) {
-    // Key_Handle();
+    Key_Handle();
 
-    // while (1) {
-    //     sandglass.update();
-    //     if (sandglass.is_Activated() == false) {
-    //         break;
-    //     }
-    // }
-    // led_heartbeat();
-    // delay(1000);
-    LedMatrix_Test();
+    while (1) {
+        sandglass.update(); // Update RTC and led matrices data
+        
+        if (sandglass.is_activated() == false) {
+            break;
+        }
+    }
+    
+    led_heartbeat();
+    delay(50);
 }
 
 static void Key_Handle(void) {
     while (1) {
         M5.update();
-        if (sandglass.is_Activated() == false) {
+        if (sandglass.is_activated() == false) {
             if (M5.BtnA.wasReleasefor(800)) {
                 sandglass.start(&CountdownStruct);
                 break;

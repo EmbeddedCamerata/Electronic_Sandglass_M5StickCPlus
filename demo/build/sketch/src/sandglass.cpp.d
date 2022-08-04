@@ -218,4 +218,8 @@
  /home/kafcoppelia/APPLICATIONS/Arduino/libraries/M5StickCPlus/src/utility/Speaker.h \
  /home/kafcoppelia/APPLICATIONS/Arduino/libraries/M5StickCPlus/src/utility/Config.h \
  /home/kafcoppelia/.arduino15/packages/m5stack/hardware/esp32/2.0.3/cores/esp32/esp32-hal-dac.h \
- /home/kafcoppelia/APPLICATIONS/Arduino/libraries/M5StickCPlus/src/RTC.h
+ /home/kafcoppelia/APPLICATIONS/Arduino/libraries/M5StickCPlus/src/RTC.h \
+ /home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/src/../include/ledmatrix.h \
+ /home/kafcoppelia/APPLICATIONS/Arduino/libraries/AceSPI/src/AceSPI.h \
+ /home/kafcoppelia/APPLICATIONS/Arduino/libraries/AceSPI/src/ace_spi/HardSpiInterface.h \
+ /home/kafcoppelia/APPLICATIONS/Arduino/libraries/AceSPI/src/ace_spi/SimpleSpiInterface.h

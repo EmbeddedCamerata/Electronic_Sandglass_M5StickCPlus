@@ -7,6 +7,4 @@ void User_Setup(void);
 void User_Loop(void);
 void led_heartbeat(void);
 
-extern Sandglass sandglass;
-
 #endif
