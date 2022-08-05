@@ -53,5 +53,7 @@
         "streambuf": "cpp",
         "cinttypes": "cpp",
         "typeinfo": "cpp"
-    }
+    },
+    "editor.fontSize": 16,
+    "editor.fontFamily": "'Courier New', 'monospace', monospace"
 }

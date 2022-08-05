@@ -39,7 +39,12 @@ void SoftSpi<T_SPII>::decrease(int layer) {
     int i, j, temp;
     for (i = 0; i < layer; i++) {
         for (j = 7; j >= 0; j--) {
-            temp = (7 - this->LedMatrixStruct.layer + j) < 8 ? (15 - this->LedMatrixStruct.layer + j) : 8;
+            if (this->LedMatrixStruct.layer < 8) {
+                temp = (this->LedMatrixStruct.layer - 7 + j) < 0 ? 0 : (this->LedMatrixStruct.layer - 7 + j);
+            }
+            else {
+                temp = (this->LedMatrixStruct.layer - 7 + j) > 8 ? 8 : (this->LedMatrixStruct.layer - 7 + j);
+            }
             this->LedMatrixStruct.matrix_data[j] = Light_Mask[temp];
         }
         this->LedMatrixStruct.layer--;
@@ -61,9 +66,20 @@ void SoftSpi<T_SPII>::add(int layer) {
 }
 
 template <class T_SPII>
-void SoftSpi<T_SPII>::drop(int layer) {
-    int drop_len = 7 - LedMatrixStruct.layer/2; // e.g. layer=9, just drop 3
+void SoftSpi<T_SPII>::drop(int _cur_drop) {
+    if (_cur_drop > 1) {
+        this->LedMatrixStruct.matrix_data[_cur_drop-2] &= ~(0x80 >> (_cur_drop-2));
+    }
+    this->LedMatrixStruct.matrix_data[_cur_drop-1] |= 0x80 >> (_cur_drop-1);
+    this->refresh();
+}
 
+template <class T_SPII>
+void SoftSpi<T_SPII>::invert(uint8_t data[8]) {
+    int i;
+    for (i = 0; i < 8; i++) {
+        this->LedMatrixStruct.matrix_data[7-i] = ~data[i];  // Not just simple inversion
+    }
 }
 
 template <class T_SPII>
@@ -115,14 +131,25 @@ void LedMatrix::stop(void) {
     this->lm_bottom.full();
 }
 
-void LedMatrix::update(void) {
+int LedMatrix::get_drop_times(void) {
+    return 7 - this->lm_bottom.LedMatrixStruct.layer/2;
+}
+
+void LedMatrix::update(int _cur_drop) {
     // 1. Top decreases one layer
-    this->lm_top.decrease(1);
-
+    if (_cur_drop == 1) {
+        this->lm_top.decrease(1);
+    }
+    // this->lm_top.decrease(1);
+    
     // 2. Drop
-
-    // 3. Bottom adds one layer
-    this->lm_bottom.add(1);
+    this->lm_bottom.drop(_cur_drop);
+    
+    // 3. Bottom adds one layer if drops all finished
+    if (_cur_drop == this->_drop_time+1) {
+        this->lm_bottom.add(1);
+        this->_cur_drop = 1;
+    }
 }
 
 void LedMatrix::refresh(void) {
@@ -141,8 +168,8 @@ void LedMatrix::refresh(void) {
 void LedMatrix::refresh_for(float _interval) {
     unsigned long _start_tick = millis();
     unsigned long _now_tick = millis();
-    while ((_now_tick - _start_tick) < (unsigned long)(_interval * 1000)) {
+    do {
         this->refresh();
         _now_tick = millis();
-    }
+    } while ((_now_tick - _start_tick) < (unsigned long)(_interval * 1000));
 }

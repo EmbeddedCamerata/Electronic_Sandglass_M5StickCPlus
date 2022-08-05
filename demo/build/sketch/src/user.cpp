@@ -1,5 +1,6 @@
 #line 1 "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/src/user.cpp"
 #include <M5StickCPlus.h>
+#include "../include/sandglass.h"
 #include "../include/user.h"
 #include "../include/ledmatrix.h"
 

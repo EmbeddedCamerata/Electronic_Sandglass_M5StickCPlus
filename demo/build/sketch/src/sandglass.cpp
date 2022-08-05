@@ -17,6 +17,7 @@ void Sandglass::init(void) {
 
 void Sandglass::start(Countdown_TypeDef* CountdownStruct) {
     this->isActivated = true;
+	this->first_interval = true;
 	this->Set_Countdown(CountdownStruct);
     
 	// Start at 00:00:00
@@ -26,10 +27,11 @@ void Sandglass::start(Countdown_TypeDef* CountdownStruct) {
     TimeStruct.Seconds = 0;
     M5.Rtc.SetTime(&TimeStruct);
 
-	this->interval = (int16_t)(this->set_time.mins * 60 + this->set_time.secs) / 15;	// Get the interval of LED display refreshment
-	this->_start_tick = millis();
-	
+	this->interval = 1.0 * (this->set_time.mins * 60 + this->set_time.secs) / 15;	// Get the interval of LED display refreshment
+	this->_cur_drop = 1;
+
     // Then go to led matrix
+	this->_start_tick = millis();
 	this->LedMatrix::start();
 }
 
@@ -57,16 +59,27 @@ void Sandglass::update(void) {
 	this->Show_RestTime();
 
 	// Then go to led matrix
+	// Omit the first interval. First refreshment at the second interval
 	if (this->first_interval) {
 		this->first_interval = false;
 	}
-	this->LedMatrix::refresh();
+	this->_drop_time = this->get_drop_times();
+
+	M5.Lcd.setCursor(10, 90);
+	M5.Lcd.printf("Drop time: %d\n", this->_drop_time);
+
+	_now_tick = this->_start_tick;
+
+	this->drop_interval = this->_drop_time > 1 ? (this->interval / (this->_drop_time+1)) : 1;
 
 	_now_tick = millis();
-	if ((_now_tick - this->_start_tick) >= (unsigned long)(this->interval * 1000) and !this->first_interval) {
-		this->LedMatrix::update();
+	if (!this->first_interval and (_now_tick - this->_start_tick) >= (unsigned long)(this->drop_interval * 1000)) {
+		this->LedMatrix::update(this->_cur_drop);
+		this->_cur_drop++;
 		this->_start_tick = _now_tick;
 	}
+
+	this->LedMatrix::refresh();
 
 	if (this->rest_time.mins == 0 and this->rest_time.secs == 0) {
 		M5.Lcd.setCursor(10, 50);
@@ -77,7 +90,6 @@ void Sandglass::update(void) {
 
 void Sandglass::stop(void) {
     this->isActivated = false;
-	this->first_interval = true;
 	this->interval = 0;
 	this->set_time.mins = 0;
 	this->set_time.secs = 0;

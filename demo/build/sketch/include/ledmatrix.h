@@ -52,7 +52,8 @@ class SoftSpi {
     void full(void);
     void decrease(int layer);
     void add(int layer);
-    void drop(int layer);
+    void drop(int _cur_drop);
+    void invert(uint8_t data[8]);
 
     const T_SPII* get_spiInterface() {
         return &mSpiInterface;
@@ -75,9 +76,16 @@ class LedMatrix {
     void init(void);
     void start(void);
     void stop(void);
-    void update(void);
+    int get_drop_times(void);
+    void update(int _cur_drop);
     void refresh_for(float _interval);  // Refresh two led matrices at the same time for an interval
     void refresh(void);
+
+    protected:
+    float interval; // Top class Sandglass will read it
+    float drop_interval;
+    int _drop_time;
+    int _cur_drop; // ?
 
     private:
     SoftSpi<SpiInterface> lm_top;

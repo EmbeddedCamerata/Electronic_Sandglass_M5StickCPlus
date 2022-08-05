@@ -27,9 +27,7 @@ class Sandglass: public LedMatrix {
     void test(void) {
         LedMatrix::test();
     };
-
-    float interval;
-
+    
     private:
     void Set_Countdown(Countdown_TypeDef* CountdownStruct);
 
