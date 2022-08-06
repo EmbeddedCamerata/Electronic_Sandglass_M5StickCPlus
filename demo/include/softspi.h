@@ -1,28 +1,20 @@
 #ifndef _SOFTSPI_H
 #define _SOFTSPI_H
 
-#define LEDMATRIX_D         GPIO_NUM_26	// Data pin
-#define LEDMATRIX_SRCLK1    GPIO_NUM_25	// Clock pin
-#define LEDMATRIX_SRCLK2    GPIO_NUM_33 // Clock pin
-#define LEDMATRIX_RCLK		GPIO_NUM_0  // Latch pin
-#define MUTEX_PIN           GPIO_NUM_36 // Remember float input
-
-// typedef struct SpiInterface {
-// 	uint8_t latchPin;
-// 	uint8_t dataPin;
-// 	uint8_t clockPin;
-// } SpiInterface_TypeDef;
+#include <Arduino.h>
 
 namespace softspi {
 
 class SoftSpi {
 	public:
-	explicit SoftSpi(uint8_t latchPin, uint8_t dataPin, uint8_t clockPin): 
+	SoftSpi(uint8_t latchPin, uint8_t dataPin, uint8_t clockPin, bool auto_write=true): 
 		mLatchPin(latchPin), 
 		mDataPin(dataPin),
 		mClockPin(clockPin),
-		auto_write(true) 
-	{};
+		auto_write(auto_write)
+	{
+		this->fill(false);
+	};
 	// int i;
 	// SpiInterface_TypeDef spi;
 	// va_list v;
@@ -36,23 +28,23 @@ class SoftSpi {
 	// }
 
 	void show(void) const {
-		int i, j;
+		int i;
 		uint8_t _buf[2];
 
-		for (j = 0; j < 8; j++) {
-			_buf[0] = this->_buffer[j];
+		for (i = 0; i < 8; i++) {
+			_buf[0] = this->_buffer[i];
 			_buf[1] = 0x01 << i;     // Choose the row
 			this->send16(_buf[1], _buf[0]);
 			delay(2);
 		}
 	}
 
-	void fill(void) {
-		uint8_t fill = 0xFF;
-		int i, j;
+	void fill(bool color=true) {
+		uint8_t fill = (color) ? 0xFF : 0x00;
+		int i;
 
-		for (j = 0; j < 8; j++) {
-			this->_buffer[j] = fill;
+		for (i = 0; i < 8; i++) {
+			this->_buffer[i] = fill;
 		}
 
 		if (this->auto_write) {
@@ -60,14 +52,21 @@ class SoftSpi {
 		}
 	}
 	
-	void _pixel(int x, int y, bool filled=true) {
+	void _pixel(int x, int y, bool filled) {
 		if (filled) {
-			this->_buffer[x] |= 0x01 << y;
+			this->_buffer[x] |= (0x01 << y);
+		}
+		else {
+			this->_buffer[x] &= ~(0x01 << y);
 		}
 
 		if (this->auto_write) {
 			this->show();
 		}
+	}
+
+	bool _get_pixel(int x, int y) const {
+		return (this->_buffer[x] & (0x01 << y));
 	}
 
 	/** Initialize the various pins. */
@@ -130,8 +129,8 @@ class SoftSpi {
     }
 
 	protected:
-	uint8_t _buffer[8]; 
 	const bool auto_write;
+	uint8_t _buffer[8]; 
 
 	private:
 	uint8_t const mLatchPin;
@@ -140,7 +139,5 @@ class SoftSpi {
 };
 
 }
-
-//MultiSoftSpi multi_softspi(SimpleSpiInterface(LEDMATRIX_RCLK, LEDMATRIX_D, LEDMATRIX_SRCLK1), SimpleSpiInterface(LEDMATRIX_RCLK, LEDMATRIX_D, LEDMATRIX_SRCLK2));
 
 #endif

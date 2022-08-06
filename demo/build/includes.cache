@@ -45,7 +45,17 @@
     "Includepath": null
   },
   {
+    "Sourcefile": "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/src/ledmatrix2.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
     "Sourcefile": "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/src/sandglass.cpp",
+    "Include": "",
+    "Includepath": null
+  },
+  {
+    "Sourcefile": "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/src/sandglass2.cpp",
     "Include": "",
     "Includepath": null
   },
