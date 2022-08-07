@@ -1,5 +1,5 @@
 {
-  "additionalFiles": "../..,../..,../..,../..,../..,../..,../..,../..,../..,../..,../..,../..",
+  "additionalFiles": "../..,../..,../..,../..,../..",
   "builtInLibrariesFolders": "",
   "builtInToolsFolders": "/usr/share/arduino/tools-builder,/home/kafcoppelia/.arduino15/packages",
   "compiler.optimization_flags": "",
@@ -8,5 +8,5 @@
   "hardwareFolders": "/usr/share/arduino/hardware,/home/kafcoppelia/.arduino15/packages",
   "otherLibrariesFolders": "/home/kafcoppelia/APPLICATIONS/Arduino/libraries",
   "runtime.ide.version": "10819",
-  "sketchLocation": "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/demo.ino"
+  "sketchLocation": "/home/kafcoppelia/WORK/BOARDS/M5StickC+/imu_sandglass/imu_sandgalss.ino"
 }

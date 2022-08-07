@@ -10,57 +10,32 @@
     "Includepath": "/home/kafcoppelia/.arduino15/packages/m5stack/hardware/esp32/2.0.3/variants/m5stick_c_plus"
   },
   {
-    "Sourcefile": "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/demo.ino.cpp",
+    "Sourcefile": "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/imu_sandgalss.ino.cpp",
     "Include": "M5StickCPlus.h",
     "Includepath": "/home/kafcoppelia/APPLICATIONS/Arduino/libraries/M5StickCPlus/src"
   },
   {
-    "Sourcefile": "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/demo.ino.cpp",
+    "Sourcefile": "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/imu_sandgalss.ino.cpp",
     "Include": "Wire.h",
     "Includepath": "/home/kafcoppelia/.arduino15/packages/m5stack/hardware/esp32/2.0.3/libraries/Wire/src"
   },
   {
-    "Sourcefile": "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/demo.ino.cpp",
+    "Sourcefile": "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/imu_sandgalss.ino.cpp",
     "Include": "SPI.h",
     "Includepath": "/home/kafcoppelia/.arduino15/packages/m5stack/hardware/esp32/2.0.3/libraries/SPI/src"
   },
   {
-    "Sourcefile": "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/demo.ino.cpp",
+    "Sourcefile": "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/imu_sandgalss.ino.cpp",
     "Include": "FS.h",
     "Includepath": "/home/kafcoppelia/.arduino15/packages/m5stack/hardware/esp32/2.0.3/libraries/FS/src"
   },
   {
-    "Sourcefile": "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/demo.ino.cpp",
+    "Sourcefile": "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/imu_sandgalss.ino.cpp",
     "Include": "",
     "Includepath": null
   },
   {
-    "Sourcefile": "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/src/ledmatrix.cpp",
-    "Include": "AceSPI.h",
-    "Includepath": "/home/kafcoppelia/APPLICATIONS/Arduino/libraries/AceSPI/src"
-  },
-  {
-    "Sourcefile": "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/src/ledmatrix.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/src/ledmatrix2.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/src/sandglass.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/src/sandglass2.cpp",
-    "Include": "",
-    "Includepath": null
-  },
-  {
-    "Sourcefile": "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/src/user.cpp",
+    "Sourcefile": "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/build/sketch/src/imu_sandglass.cpp",
     "Include": "",
     "Includepath": null
   },

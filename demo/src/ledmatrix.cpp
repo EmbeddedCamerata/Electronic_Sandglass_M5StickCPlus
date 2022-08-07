@@ -1,174 +1,83 @@
 #include "../include/ledmatrix.h"
 
-static uint8_t bigheart[8] = {0x00, 0x66, 0xFF, 0xFF, 0x7E, 0x3C, 0x18, 0x00};
-static uint8_t smallheart[8] = {0x00, 0x24, 0x7E, 0x7E, 0x3C, 0x18, 0x00, 0x00};
-    // 0xFF, 0x7F, 0x3F, 0x1F, 0x0F, 0x07, 0x03, 0x01};
-
-template <class T_SPII>
-void SoftSpi<T_SPII>::show(uint8_t data[8], float _interval) {
-    int i;
-    for (i = 0; i < 8; i++) {
-        this->LedMatrixStruct.matrix_data[i] = data[i];
+void LedMatrix::pixel(int x, int y, bool filled) {
+    if (x < 0 or x > 7) {
+        return;
     }
-    this->refresh_for(_interval);
+
+    if (y < 0 or y > 7) {
+        return;
+    }
+    this->_pixel(x, y, filled);
 }
 
-template <class T_SPII>
-void SoftSpi<T_SPII>::clear(void) {
-    int i;
-    for (i = 0; i < 8; i++) {
-        this->LedMatrixStruct.matrix_data[i] = LIGHT_0_MASK;
-    }
-    this->LedMatrixStruct.layer = 0;
-    this->refresh();
+bool LedMatrix::pixel(int x, int y) {
+    assert(x >= 0 and x <= 7);
+    assert(y >= 0 and y <= 7);
+
+    return this->_get_pixel(x, y);
 }
 
-template <class T_SPII>
-void SoftSpi<T_SPII>::full(void) {
-    int i;
-    for (i = 0; i < 8; i++) {
-        this->LedMatrixStruct.matrix_data[i] = LIGHT_8_MASK;
-    }
-    this->LedMatrixStruct.layer = 15;
-    this->refresh();
-}
+/*
+    Shift pixels by x and y
+    :param int x: The x coordinate of the pixel
+    :param int y: The y coordinate of the pixel
+    :param bool rotate: Rotate the shifted pixels to the left side (default=False)
+*/
+void LedMatrix::shift(int x, int y, bool rotate) {
+    int i, row, col;
+    bool auto_write = this->auto_write;
+    bool last_pixel;
+    this->_auto_write = false;
 
-template <class T_SPII>
-void SoftSpi<T_SPII>::decrease(int layer) {
-    int i, j, temp;
-    for (i = 0; i < layer; i++) {
-        for (j = 7; j >= 0; j--) {
-            if (this->LedMatrixStruct.layer < 8) {
-                temp = (this->LedMatrixStruct.layer - 7 + j) < 0 ? 0 : (this->LedMatrixStruct.layer - 7 + j);
+    if (x > 0) {
+        for (i = 0; i < x; i++) {
+            for (row = 0; row < this->rows; row++) {
+                last_pixel = (rotate) ? this->__getitem__(this->columns - 1, row) : 0;
+                for (col = this->columns - 1; col > 0; col--) {
+                    this->__setitem__(col, row, this->__getitem__(col - 1, row));
+                }
+                this->__setitem__(0, row, last_pixel);
             }
-            else {
-                temp = (this->LedMatrixStruct.layer - 7 + j) > 8 ? 8 : (this->LedMatrixStruct.layer - 7 + j);
+        }
+    }
+    else if (x < 0) {
+        for (i = 0; i < -x; i++) {
+            for (row = 0; row < this->rows; row++) {
+                last_pixel = (rotate) ? this->__getitem__(0, row) : 0;
+                for (col = 0; col < this->columns - 1; col++) {
+                    this->__setitem__(col, row, this->__getitem__(col + 1, row));
+                }
+                this->__setitem__(this->columns - 1, row, last_pixel);
             }
-            this->LedMatrixStruct.matrix_data[j] = Light_Mask[temp];
         }
-        this->LedMatrixStruct.layer--;
     }
-    this->refresh();
-}
 
-template <class T_SPII>
-void SoftSpi<T_SPII>::add(int layer) {
-    int i, j, temp;
-    for (i = 0; i < layer; i++) {
-        for (j = 7; j >= 0; j--) {
-            temp = (this->LedMatrixStruct.layer + j - 7) > 8 ? 8 : (this->LedMatrixStruct.layer + j - 7);
-            this->LedMatrixStruct.matrix_data[j] = Light_Mask[temp];
+    if (y > 0) {
+        for (i = 0; i < y; i++) {
+            for (col = 0; col < this->columns; col++) {
+                last_pixel = (rotate) ? this->__getitem__(col, this->rows - 1) : 0;
+                for (row = this->rows - 1; row > 0; row--) {
+                    this->__setitem__(col, row, this->__getitem__(col, row - 1));
+                }
+                this->__setitem__(col, 0, last_pixel);
+            }
         }
-        this->LedMatrixStruct.layer++;
     }
-    this->refresh();
-}
-
-template <class T_SPII>
-void SoftSpi<T_SPII>::drop(int _cur_drop) {
-    if (_cur_drop > 1) {
-        this->LedMatrixStruct.matrix_data[_cur_drop-2] &= ~(0x80 >> (_cur_drop-2));
+    else if (y < 0) {
+        for (i = 0; i < -y; i++) {
+            for (col = 0; col < this->columns; col++) {
+                last_pixel = (rotate) ? this->__getitem__(col, 0) : 0;
+                for (row = 0; row < this->rows - 1; row++) {
+                    this->__setitem__(col, row, this->__getitem__(col, row + 1));
+                }
+                this->__setitem__(col, this->rows - 1, last_pixel);
+            }
+        }
     }
-    this->LedMatrixStruct.matrix_data[_cur_drop-1] |= 0x80 >> (_cur_drop-1);
-    this->refresh();
-}
 
-template <class T_SPII>
-void SoftSpi<T_SPII>::invert(uint8_t data[8]) {
-    int i;
-    for (i = 0; i < 8; i++) {
-        this->LedMatrixStruct.matrix_data[7-i] = ~data[i];  // Not just simple inversion
+    this->_auto_write = auto_write;
+    if (_auto_write) {
+        this->show();
     }
-}
-
-template <class T_SPII>
-void SoftSpi<T_SPII>::refresh_for(float _interval) {
-    unsigned long _start_tick = millis();
-    unsigned long _now_tick = millis();
-    while ((_now_tick - _start_tick) < (unsigned long)(_interval * 1000)) {
-        this->refresh();
-        _now_tick = millis();
-    }
-}
-
-template <class T_SPII>
-void SoftSpi<T_SPII>::refresh(void) {
-    int i;
-    uint8_t buf[2];
-    for (i = 0; i < 8; i++) {
-        buf[0] = this->LedMatrixStruct.matrix_data[i];
-        buf[1] = 0x01 << i;     // Choose the row
-        this->mSpiInterface.send16(buf[1], buf[0]);
-        delay(2);
-    }
-}
-
-LedMatrix::LedMatrix(): lm_top(SimpleSpiInterface(LEDMATRIX_RCLK, LEDMATRIX_D, LEDMATRIX_SRCLK1)),    \
-    lm_bottom(SimpleSpiInterface(LEDMATRIX_RCLK, LEDMATRIX_D, LEDMATRIX_SRCLK2)), isWorking(false) {}
-
-void LedMatrix::test(void) {
-    this->lm_top.show(bigheart, 1.5);
-    this->lm_bottom.show(smallheart, 1.5);
-}
-
-void LedMatrix::init(void) {
-    this->lm_top.get_spiInterface()->begin();
-    this->lm_bottom.get_spiInterface()->begin();
-    gpio_pulldown_dis(MUTEX_PIN);
-    gpio_pullup_dis(MUTEX_PIN);
-}
-
-void LedMatrix::start(void) {
-    this->isWorking = true;
-    this->lm_top.full();
-    this->lm_bottom.clear();
-}
-
-void LedMatrix::stop(void) {
-    this->isWorking = false;
-    this->lm_top.clear();
-    this->lm_bottom.full();
-}
-
-int LedMatrix::get_drop_times(void) {
-    return 7 - this->lm_bottom.LedMatrixStruct.layer/2;
-}
-
-void LedMatrix::update(int _cur_drop) {
-    // 1. Top decreases one layer
-    if (_cur_drop == 1) {
-        this->lm_top.decrease(1);
-    }
-    // this->lm_top.decrease(1);
-    
-    // 2. Drop
-    this->lm_bottom.drop(_cur_drop);
-    
-    // 3. Bottom adds one layer if drops all finished
-    if (_cur_drop == this->_drop_time+1) {
-        this->lm_bottom.add(1);
-        this->_cur_drop = 1;
-    }
-}
-
-void LedMatrix::refresh(void) {
-    int i;
-    uint8_t buf[3];
-    for (i = 0; i < 8; i++) {
-        buf[0] = this->lm_top.LedMatrixStruct.matrix_data[i];
-        buf[1] = this->lm_bottom.LedMatrixStruct.matrix_data[i];
-        buf[2] = 0x01 << i;     // Choose the row
-        this->lm_top.get_spiInterface()->send16(buf[2], buf[0]);
-        this->lm_bottom.get_spiInterface()->send16(buf[2], buf[1]);
-        delay(2);
-    }
-}
-
-void LedMatrix::refresh_for(float _interval) {
-    unsigned long _start_tick = millis();
-    unsigned long _now_tick = millis();
-    do {
-        this->refresh();
-        _now_tick = millis();
-    } while ((_now_tick - _start_tick) < (unsigned long)(_interval * 1000));
 }
