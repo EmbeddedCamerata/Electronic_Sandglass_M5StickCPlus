@@ -1,4 +1,4 @@
-#line 1 "/home/kafcoppelia/WORK/BOARDS/M5StickC+/imu_sandglass/include/softspi.h"
+#line 1 "/home/kafcoppelia/WORK/BOARDS/M5StickC+/demo/include/softspi.h"
 #ifndef _SOFTSPI_H
 #define _SOFTSPI_H
 

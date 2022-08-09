@@ -1,20 +1,25 @@
 #include <M5StickCPlus.h>
-// #include "../include/sandglass.h"
 #include "../include/user.h"
-// #include "../include/ledmatrix.h"
+#include "../include/matrixsand.h"
+#include "../include/ledmatrix.h"
 #include "../include/sandglass.h"
 #include "../include/bsp_timer.h"
 
+#define LEDMATRIX_D         GPIO_NUM_26	// Data pin
+#define LEDMATRIX_SRCLK1    GPIO_NUM_25	// Clock pin
+#define LEDMATRIX_SRCLK2    GPIO_NUM_33 // Clock pin
+#define LEDMATRIX_RCLK		GPIO_NUM_0  // Latch pin
 #define MUTEX_PIN           GPIO_NUM_36 // Remember float input
 
 Countdown_TypeDef CountdownStruct = {.mins = 0, .secs = 0};
 Sandglass2 sandglass2;
-unsigned long _now_tick, _start_tick;
 hw_timer_t* rtc_timer;
+hw_timer_t* update_timer;
 
 static void Lcd_Setup(void);
 static void Key_Handle(void);
-static void rtc_update(void);
+static void clock_update(void);
+static void ledmatrix_refresh(void);
 static void led_heartbeat(void);
 
 void User_Setup(void) {
@@ -24,7 +29,7 @@ void User_Setup(void) {
     gpio_pulldown_dis(MUTEX_PIN);
     gpio_pullup_dis(MUTEX_PIN);
 
-    // sandglass.init();
+    sandglass2.init();
     Lcd_Setup();
 
     ret = M5.IMU.Init();
@@ -42,12 +47,21 @@ void User_Loop(void) {
 
     while (1) {
         // sandglass2.update(); // Update RTC and led matrices data
-        if (sandglass2.is_tick()) {
-            sandglass2.update();
+        if (sandglass2.isTick) {
+            sandglass2.clock_update();
+            
+        }
+        else {
+            sandglass2.frame_refresh();
+        }
+
+        if (sandglass2.need_lm_refresh) {
+            sandglass2.ledmatrix_update();
         }
         
         if (not sandglass2.is_activated()) {
             timerStop(rtc_timer);
+            timerStop(update_timer);
             break;
         }
     }
@@ -60,11 +74,16 @@ static void Key_Handle(void) {
     while (1) {
         M5.update();
         if (M5.BtnA.wasReleasefor(800)) {
-            sandglass2.start(&CountdownStruct);
-            rtc_timer = timer1s(0, rtc_update, true);
+            rtc_timer = timer1s(0, clock_update, true);
             if (rtc_timer == NULL) {
                 Serial.println("Start rtc_timer error!");
             }
+            update_timer = milli_timer(sandglass2.frame_refresh_interval, 1, ledmatrix_refresh, true);   // ms timer
+            if (update_timer == NULL) {
+                Serial.println("Start update_timer error!");
+            }
+
+            sandglass2.start(&CountdownStruct);
             break;
         }
         else if (M5.BtnA.wasReleased()) {
@@ -102,12 +121,13 @@ static void Key_Handle(void) {
 /*
     Every 1 second, rtc tick.
 */
-static void rtc_update(void) {
+static void clock_update(void) {
     // In timer interrupt, reading RTC causes watchdog failed, core panic!
-
     sandglass2.tick();
+}
 
-    // sandglass2.reset_tick();
+static void ledmatrix_refresh(void) {
+    sandglass2.need_lm_refresh = true;
 }
 
 static void led_heartbeat(void) {
