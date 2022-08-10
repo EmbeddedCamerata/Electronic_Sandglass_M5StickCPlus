@@ -32,7 +32,7 @@ void Sandglass2::start(Countdown_TypeDef* CountdownStruct) {
 	this->rest_time.mins = CountdownStruct->mins;
     this->rest_time.secs = CountdownStruct->secs;
     this->counter = 0;
-    this->frame_refresh_interval = (int)((this->rest_time.mins * 60 + this->rest_time.secs)*1000 / get_total_drop_steps(LEDMATRIX_START_LAYER));
+    this->frame_refresh_interval = (int)((CountdownStruct->mins * 60 + CountdownStruct->secs)*1000 / get_total_drop_steps(LEDMATRIX_START_LAYER));
 
     this->sand1.clear();
     this->sand2.clear();
@@ -83,6 +83,7 @@ void IRAM_ATTR Sandglass2::ledmatrix_update(void) {
     // M5.Lcd.setCursor(10, 45);
     // M5.Lcd.printf("X:%5.2f/nY:%5.2f/nZ:%5.2f ", accX, accY, accZ);
 
+    // Using acceleration
     this->xx = this->accZ - this->accY;
     this->yy = this->accZ + this->accY;
     this->zz = this->accX;
@@ -108,6 +109,8 @@ void IRAM_ATTR Sandglass2::ledmatrix_update(void) {
     if (this->updated2) {
         this->update_matrix(&this->m2, &this->sand2);
     }
+
+    this->need_lm_refresh = false;
 }
 
 void Sandglass2::stop(void) {
@@ -120,11 +123,7 @@ void Sandglass2::stop(void) {
     this->frame_refresh_interval = 0;
     this->need_lm_refresh = false;
 
-    this->sand1.clear();
-    this->sand2.clear();
-
-    this->m1.fill(0);
-    this->m2.fill(0);
+    this->frame_refresh();
 }
 
 void Sandglass2::show_settime(Countdown_TypeDef* CountdownStruct) {
@@ -146,25 +145,30 @@ void Sandglass2::update_matrix(LedMatrix *m, matrix_sand::MatrxiSand *s) {
 }
 
 void IRAM_ATTR Sandglass2::frame_refresh(void) {
-    int i;
-    for (i = 0; i < FRAME_REFRESHMENT_FREQ; i++) {  
-        if (this->isTick) {
-            break;
-        }
-        else {
-            m1.show();
-            m2.show();
-        }
-    }
+    // int i;
+    // for (i = 0; i < FRAME_REFRESHMENT_FREQ; i++) {  
+    //     if (this->isTick) {
+    //         break;
+    //     }
+    //     else {
+    //         m1.show();
+    //         m2.show();
+    //     }
+    // }
+    if (!this->isTick) {
+        m1.show();
+        m2.show();
+    } 
 }
 
 int get_total_drop_steps(int _start_layer) {
     int _axis = 16 - _start_layer;
     int _add_to = 5 - (_start_layer - 7) / 2;
-    int i, _total;
+    int i, _total = 0; // 28
     
     for (i = 8; i >= _add_to; i--) {
         _total += i * (i*2 - 1);
+        // + (16 - i);
         if (i <= _axis - 1) {
             _total -= 2*i * (_axis - i);
         }
@@ -172,73 +176,6 @@ int get_total_drop_steps(int _start_layer) {
 
     return _total;
 }
-
-// void test(void) {
-//     matrix_sand::MatrxiSand sand1 = matrix_sand::MatrxiSand(8, 8);
-//     matrix_sand::MatrxiSand sand2 = matrix_sand::MatrxiSand(8, 8);
-
-//     LedMatrix m1 = LedMatrix(LEDMATRIX_RCLK, LEDMATRIX_D, LEDMATRIX_SRCLK1, false);
-//     LedMatrix m2 = LedMatrix(LEDMATRIX_RCLK, LEDMATRIX_D, LEDMATRIX_SRCLK2, false);
-
-//     unsigned long _start_tick, _now_tick;
-//     int i, j;
-//     int x, y;
-//     for (i = 0; i < 8; i++) {
-//         sand1.__setitem__(i, i, true);
-//     }
-
-//     sand2.__setitem__(0, 0, true);
-//     sand2.__setitem__(1, 1, true);
-//     sand2.__setitem__(2, 2, true);
-//     sand2.__setitem__(3, 3, true);
-//     sand2.__setitem__(4, 4, true);
-//     sand2.__setitem__(5, 5, true);
-//     sand2.__setitem__(6, 6, true);
-//     sand2.__setitem__(7, 7, true);
-
-//     // update_matrix(m1, sand1);
-//     update_matrix(&m2, &sand2);
-//     m1.show();
-//     // m1.fill();
-//     // m2.fill();
-
-//     M5.Lcd.setCursor(10, 15);
-//     for (i = 0; i < 8; i++) {
-//         M5.Lcd.printf("%d ", sand2.__getitem__(i, i));
-//     }
-
-//     M5.Lcd.setCursor(10, 30);
-//     for (i = 0; i < 7; i++) {
-//         M5.Lcd.printf("0x%02X ", m2._get_line(i));
-//     }
-
-//     for (i = 0; i < 40; i++) {
-//         m1.show();
-//         m2.show();
-//         // delay(10);
-//     }
-
-//     m1.fill(0);
-//     m2.fill(0);
-//     m1.show();
-
-//     _start_tick = millis();
-//     while (1) {
-//         M5.Lcd.setCursor(10, 15);
-//         for (i = 0; i < 7; i++) {
-//             M5.Lcd.printf("0x%02X ", m2._get_line(i));
-//         }
-
-//         _now_tick = millis();
-//         if ((_now_tick - _start_tick) >= (unsigned long)(0.5 * 1000)) {
-//             x = rand()%8;
-//             y = rand()%8;
-//             m2.__setitem__(x , y, 1 - m2.__getitem__(x, y));
-//             _start_tick = _now_tick;
-//         }
-//         m2.show();
-//     }
-// }
 
 // void common_test(void) {
 //     float accX, accY, accZ;

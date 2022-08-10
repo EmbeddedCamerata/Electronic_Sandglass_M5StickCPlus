@@ -4,6 +4,7 @@
 #include "../include/ledmatrix.h"
 #include "../include/sandglass.h"
 #include "../include/bsp_timer.h"
+#include "../include/nonblock_delay.h"
 
 #define LEDMATRIX_D         GPIO_NUM_26	// Data pin
 #define LEDMATRIX_SRCLK1    GPIO_NUM_25	// Clock pin
@@ -15,6 +16,7 @@ Countdown_TypeDef CountdownStruct = {.mins = 0, .secs = 0};
 Sandglass2 sandglass2;
 hw_timer_t* rtc_timer;
 hw_timer_t* update_timer;
+NonBlockDelay d;
 
 static void Lcd_Setup(void);
 static void Key_Handle(void);
@@ -41,6 +43,7 @@ void User_Setup(void) {
 }
 
 void User_Loop(void) {
+    int count1 = 0, count2 = 0;
     if (not sandglass2.is_activated()) {
         Key_Handle();
     }
@@ -49,15 +52,20 @@ void User_Loop(void) {
         // sandglass2.update(); // Update RTC and led matrices data
         if (sandglass2.isTick) {
             sandglass2.clock_update();
-            
         }
-        else {
-            sandglass2.frame_refresh();
-        }
-
+        
+        sandglass2.frame_refresh();
         if (sandglass2.need_lm_refresh) {
             sandglass2.ledmatrix_update();
         }
+        // if (d.Timeout()) {
+        //     sandglass2.ledmatrix_update();
+        //     d.Delay(sandglass2.frame_refresh_interval);
+        // }
+
+        // if (sandglass2.need_lm_refresh) {
+            
+        // }
         
         if (not sandglass2.is_activated()) {
             timerStop(rtc_timer);
@@ -66,7 +74,6 @@ void User_Loop(void) {
         }
     }
     led_heartbeat();
-    // sandglass2.tick();
 }
 
 static void Key_Handle(void) {
@@ -74,6 +81,7 @@ static void Key_Handle(void) {
     while (1) {
         M5.update();
         if (M5.BtnA.wasReleasefor(800)) {
+            sandglass2.start(&CountdownStruct);
             rtc_timer = timer1s(0, clock_update, true);
             if (rtc_timer == NULL) {
                 Serial.println("Start rtc_timer error!");
@@ -82,8 +90,10 @@ static void Key_Handle(void) {
             if (update_timer == NULL) {
                 Serial.println("Start update_timer error!");
             }
+            d.Delay(sandglass2.frame_refresh_interval);
 
-            sandglass2.start(&CountdownStruct);
+            M5.Lcd.setCursor(10, 70);
+            M5.Lcd.printf("Refresh: %d ms\n", sandglass2.frame_refresh_interval);
             break;
         }
         else if (M5.BtnA.wasReleased()) {
@@ -138,7 +148,7 @@ static void Lcd_Setup(void) {
     M5.Lcd.setRotation(1);
     M5.Lcd.fillScreen(BLACK);
     M5.Lcd.setCursor(80, 80);
-    M5.Lcd.print("Hello World\n");
+    M5.Lcd.printf("Hello World\n");
     delay(500);
     M5.Lcd.fillScreen(BLACK);
 }

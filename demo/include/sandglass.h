@@ -4,8 +4,7 @@
 #include "../include/ledmatrix.h"
 #include "../include/matrixsand.h"
 
-#define LEDMATRIX_START_LAYER   11  // More than 8
-#define FRAME_REFRESHMENT_FREQ  30
+#define LEDMATRIX_START_LAYER   10  // More than 8
 
 typedef struct {
     int mins;
@@ -43,7 +42,6 @@ class Sandglass2 {
     // Led matrices related
     float accX, accY, accZ, xx, yy, zz;
     bool updated1, updated2;
-    
 
     // Clock related
     int counter;                    // second counter

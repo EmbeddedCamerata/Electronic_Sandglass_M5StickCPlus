@@ -36,7 +36,7 @@ class SoftSpi {
 			_buf[0] = this->_buffer[i];
 			_buf[1] = 0x01 << i;     // Choose the row
 			this->send16(_buf[1], _buf[0]);
-			delay(2);
+			delay(1);
 		}
 	}
 
