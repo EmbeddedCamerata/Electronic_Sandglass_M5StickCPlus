@@ -13,10 +13,11 @@
 #define LEDMATRIX_RCLK		GPIO_NUM_0  // Latch pin
 #define MUTEX_PIN           GPIO_NUM_36 // Remember float input
 
+TFT_eSprite Disbuff = TFT_eSprite(&M5.Lcd);
 Countdown_TypeDef CountdownStruct = {.mins = 0, .secs = 0};
 Sandglass2 sandglass2;
-hw_timer_t* rtc_timer;
-hw_timer_t* update_timer;
+hw_timer_t* rtc_timer = NULL;
+hw_timer_t* update_timer = NULL;
 NonBlockDelay d;
 
 static void Lcd_Setup(void);
@@ -39,50 +40,53 @@ void User_Setup(void) {
     if (ret != 0) {
         Serial.println("Init IMU error!");
     }
-    // test();
-    // common_test();
 }
 
 void User_Loop(void) {
-    int count1 = 0, count2 = 0;
+
     if (not sandglass2.is_activated()) {
         Key_Handle();
     }
 
     while (1) {
-        // sandglass2.update(); // Update RTC and led matrices data
         if (sandglass2.isTick) {
             sandglass2.clock_update();
+            Disbuff.pushSprite(0, 0);
         }
         
+        // Frame refresh as frequently as you can when not completed or tick.
         sandglass2.frame_refresh();
-        if (sandglass2.need_lm_refresh) {
-            sandglass2.ledmatrix_update();
-        }
-        // if (d.Timeout()) {
-        //     sandglass2.ledmatrix_update();
-        //     d.Delay(sandglass2.frame_refresh_interval);
-        // }
 
-        // if (sandglass2.need_lm_refresh) {
-            
-        // }
+        if (sandglass2.need_lm_refresh) {
+            sandglass2.ledmatrix_update();  // data update
+        }
         
         if (not sandglass2.is_activated()) {
+            // Stop timers
             timerStop(rtc_timer);
             timerStop(update_timer);
             break;
         }
     }
-    led_heartbeat();
+    delay(1000);
 }
 
 static void Key_Handle(void) {
-    
+
+    M5.Lcd.fillScreen(TFT_BLACK);
+    M5.Lcd.setCursor(10, 10);
+    M5.Lcd.setTextColor(TFT_WHITE);
+    M5.Lcd.setTextSize(2);
+    M5.Lcd.printf("Set");
+    Disbuff.pushSprite(0, 0);
+
+    d.Delay(500);
+
     while (1) {
         M5.update();
         if (M5.BtnA.wasReleasefor(800)) {
             sandglass2.start(&CountdownStruct);
+
             rtc_timer = timer1s(0, clock_update, true);
             if (rtc_timer == NULL) {
                 Serial.println("Start rtc_timer error!");
@@ -91,10 +95,7 @@ static void Key_Handle(void) {
             if (update_timer == NULL) {
                 Serial.println("Start update_timer error!");
             }
-            d.Delay(sandglass2.frame_refresh_interval);
 
-            M5.Lcd.setCursor(10, 70);
-            M5.Lcd.printf("Refresh: %d ms\n", sandglass2.frame_refresh_interval);
             break;
         }
         else if (M5.BtnA.wasReleased()) {
@@ -122,9 +123,17 @@ static void Key_Handle(void) {
             }
         }
 
-        sandglass2.show_settime(&CountdownStruct);
+        if (d.Timeout()) {
+            sandglass2.random_idle();
+            d.Delay(500);
+        }
+        sandglass2.frame_refresh();
+        
+        sandglass2.show_countdown(&CountdownStruct);
+        Disbuff.pushSprite(0, 0);
+
         // If idle, can go into low-cost mode
-        delay(50);
+        // delay(100);
     }
 
 }
@@ -135,6 +144,7 @@ static void Key_Handle(void) {
 static void clock_update(void) {
     // In timer interrupt, reading RTC causes watchdog failed, core panic!
     sandglass2.tick();
+    digitalWrite(M5_LED, 1 - digitalRead(M5_LED));
 }
 
 static void ledmatrix_refresh(void) {
@@ -147,9 +157,11 @@ static void led_heartbeat(void) {
 
 static void Lcd_Setup(void) {
     M5.Lcd.setRotation(1);
-    M5.Lcd.fillScreen(BLACK);
+    M5.Lcd.fillScreen(TFT_BLACK);
     M5.Lcd.setCursor(80, 80);
     M5.Lcd.printf("Hello World\n");
+    Disbuff.pushSprite(0, 0);
+
+    sandglass2.smile_face();
     delay(500);
-    M5.Lcd.fillScreen(BLACK);
 }

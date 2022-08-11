@@ -15,17 +15,6 @@ class SoftSpi {
 	{
 		this->fill(false);
 	};
-	// int i;
-	// SpiInterface_TypeDef spi;
-	// va_list v;
-
-	// mSpiInterfaces = new SpiInterface_TypeDef[spiInterface_num];
-	// va_start(v, spiInterface_num);
-	// for(i = 0; i < spiInterface_num; i++)
-	// {
-	// 	spi = va_arg(v, SpiInterface_TypeDef);
-	// 	mSpiInterfaces[i] = spi;
-	// }
 
 	void show(void) const {
 		int i;
@@ -35,7 +24,7 @@ class SoftSpi {
 			_buf[0] = this->_buffer[i];
 			_buf[1] = 0x01 << i;     // Choose the row
 			this->send16(_buf[1], _buf[0]);
-			delay(1);
+			delay(2);
 		}
 	}
 
@@ -49,6 +38,14 @@ class SoftSpi {
 
 		if (this->auto_write) {
 			this->show();
+		}
+	}
+
+	void write(const uint8_t data[8]) {
+		int i;
+
+		for (i = 0; i < 8; i++) {
+			this->_buffer[i] = data[i];
 		}
 	}
 	
