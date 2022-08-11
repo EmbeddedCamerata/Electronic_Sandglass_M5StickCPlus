@@ -19,7 +19,7 @@ class LedMatrix: public SoftSpi {
     bool pixel(int x, int y);
     void shift(int x, int y, bool rotate=false);
 
-    uint8_t _get_line(int x) const {
+    uint8_t get_line(int x) const {
         return this->_buffer[x];
     }
 

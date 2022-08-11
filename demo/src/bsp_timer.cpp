@@ -1,4 +1,3 @@
-#include <M5StickCPlus.h>
 #include "esp32-hal-timer.h"
 #include "driver/timer.h"
 
@@ -37,13 +36,3 @@ hw_timer_t* milli_timer(int milli, uint8_t num, void (*fn)(void), bool autoreloa
 
     return timer;
 }
-
-void timer_callback(void) {
-    digitalWrite(M5_LED, 1 - digitalRead(M5_LED));
-}
-
-void idle_goto_sleep(void) {
-    M5.Lcd.setCursor(30, 70);
-    M5.Lcd.printf("Go sleep");
-}
-

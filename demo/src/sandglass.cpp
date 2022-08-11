@@ -8,39 +8,36 @@
 #define MUTEX_PIN           GPIO_NUM_36 // Remember float input
 
 static int get_total_drop_steps(int _start_layer);
-const uint8_t Smile_Face[8] = {0x7E, 0x42, 0XA5, 0x81, 0xA5, 0x99, 0x42, 0x7E};
 
 Sandglass2::Sandglass2(): \
     sand1(matrix_sand::MatrxiSand(_COLUMNS, _ROWS)), \
     sand2(matrix_sand::MatrxiSand(_COLUMNS, _ROWS)), \
     m1(LedMatrix(LEDMATRIX_RCLK, LEDMATRIX_D, LEDMATRIX_SRCLK1, false)), \
-    m2(LedMatrix(LEDMATRIX_RCLK, LEDMATRIX_D, LEDMATRIX_SRCLK2, false)) {    
-};
+    m2(LedMatrix(LEDMATRIX_RCLK, LEDMATRIX_D, LEDMATRIX_SRCLK2, false)) {}; // auto_write=false is necessary
 
 void Sandglass2::init(void) {
-	this->isActivated = false;
+    this->isActivated = false;
+    this->isWorking = false;
 	this->isTick = false;
+
 	this->rest_time.mins = 0;
 	this->rest_time.secs = 0;
-    this->updated1 = this->updated2 = false;
-    this->need_lm_refresh = false;
-    this->frame_refresh_interval = 0;
-
     this->last_set_time = {.mins = 0, .secs = 0};
+
+    this->updated1 = this->updated2 = false;
+    this->frame_refresh_interval = 0;
+    this->need_lm_refresh = false;
 }
 
 void Sandglass2::start(Countdown_TypeDef* CountdownStruct) {
     int sx, sy;
     this->isActivated = true;
+    this->isWorking = true;
 	this->rest_time.mins = CountdownStruct->mins;
     this->rest_time.secs = CountdownStruct->secs;
     this->frame_refresh_interval = (int)((CountdownStruct->mins * 60 + CountdownStruct->secs)*1000 / get_total_drop_steps(LEDMATRIX_START_LAYER));
 
-    M5.Lcd.setCursor(10, 10);
-    M5.Lcd.setTextColor(TFT_WHITE);
-    M5.Lcd.setTextSize(2);
     M5.Lcd.fillRect(10, 10, M5.Lcd.textWidth("Set"), M5.Lcd.fontHeight(), TFT_BLACK);
-    M5.Lcd.printf("Counting down...");
 
     this->sand1.clear();
     this->sand2.clear();
@@ -64,6 +61,14 @@ void Sandglass2::start(Countdown_TypeDef* CountdownStruct) {
     this->updated1 = this->updated2 = false;
 }
 
+void Sandglass2::pause(void) {
+    this->isWorking = false;
+}
+
+void Sandglass2::resume(void) {
+    this->isWorking = true;
+}
+
 void Sandglass2::tick(void) {
     this->isTick = true;
 }
@@ -84,8 +89,6 @@ void IRAM_ATTR Sandglass2::clock_update(void) {
 void IRAM_ATTR Sandglass2::ledmatrix_update(void) {
     int i;
     M5.IMU.getAccelData(&this->accX, &this->accY, &this->accZ);
-    // M5.Lcd.setCursor(10, 45);
-    // M5.Lcd.printf("X:%5.2f/nY:%5.2f/nZ:%5.2f ", accX, accY, accZ);
 
     // Using acceleration
     this->xx = this->accZ - this->accY;
@@ -119,14 +122,19 @@ void IRAM_ATTR Sandglass2::ledmatrix_update(void) {
 
 void Sandglass2::stop(void) {
     this->isActivated = false;
+    this->isWorking = false;
 	this->isTick = false;
+
 	this->rest_time.mins = 0;
 	this->rest_time.secs = 0;
+    this->last_set_time = {.mins = 0, .secs = 0};
 
+    this->updated1 = this->updated2 = false;
     this->frame_refresh_interval = 0;
     this->need_lm_refresh = false;
 
-    this->last_set_time = {.mins = 0, .secs = 0};
+    this->sand1.clear();
+    this->sand2.clear();
 
     this->m1.fill(0);
     this->m2.fill(0);
@@ -134,7 +142,6 @@ void Sandglass2::stop(void) {
     M5.Lcd.setCursor(10, 10);
     M5.Lcd.setTextColor(TFT_WHITE);
     M5.Lcd.setTextSize(2);
-    M5.Lcd.fillRect(10, 10, M5.Lcd.textWidth("Counting down..."), M5.Lcd.fontHeight(), TFT_BLACK);
     M5.Lcd.printf("Time up!");
 }
 
@@ -145,9 +152,9 @@ void Sandglass2::show_countdown(Countdown_TypeDef* CountdownStruct) {
     M5.Lcd.setTextDatum(TL_DATUM);
     M5.Lcd.setTextColor(TFT_RED);
     M5.Lcd.setTextSize(4);
+
     if (this->last_set_time.mins != CountdownStruct->mins or this->last_set_time.secs != CountdownStruct->secs) {
         M5.Lcd.fillRect(60, M5.Lcd.height()/2 - 12, M5.Lcd.textWidth(_time), M5.Lcd.fontHeight(), TFT_BLACK);
-        
         this->last_set_time.mins = CountdownStruct->mins;
         this->last_set_time.secs = CountdownStruct->secs;
     }
@@ -156,6 +163,10 @@ void Sandglass2::show_countdown(Countdown_TypeDef* CountdownStruct) {
 
 bool Sandglass2::is_activated(void) {
     return this->isActivated;
+}
+
+bool Sandglass2::is_working(void) {
+    return this->isWorking;
 }
 
 void Sandglass2::update_matrix(LedMatrix *m, matrix_sand::MatrxiSand *s) {
@@ -189,7 +200,7 @@ int get_total_drop_steps(int _start_layer) {
     return _total;
 }
 
-void IRAM_ATTR Sandglass2::random_idle(void) {
+void Sandglass2::random_idle(void) {
     int _x, _y;
     _x = rand() % 8;
     _y = rand() % 8;
@@ -198,12 +209,4 @@ void IRAM_ATTR Sandglass2::random_idle(void) {
     _x = rand() % 8;
     _y = rand() % 8;
     this->m2.__setitem__(_x, _y, 1 - this->m2.__getitem__(_x, _y));
-}
-
-void Sandglass2::smile_face(void) {
-    this->m1.write(Smile_Face);
-    this->m2.write(Smile_Face);
-
-    this->m1.show();
-    this->m2.show();
 }

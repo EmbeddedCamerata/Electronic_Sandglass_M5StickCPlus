@@ -8,7 +8,7 @@ namespace matrix_sand {
 
 class MatrxiSand {
     public:
-    MatrxiSand(int width, int height, bool enable=false): _width(width), _height(height), upside_down_enable(enable) {
+    MatrxiSand(int width, int height, bool enable=false): _width(width), _height(height) {
         this->_grains.assign(width * height, false);
     }
 
@@ -97,7 +97,7 @@ class MatrxiSand {
                         if (new_grains[newx + this->_width * newy]) {
                             if (not new_grains[x + this->_width * newy] and \
                                 not new_grains[newx + this->_width * y]) {
-                                std::tuple<int, int>(left, right) = this->_side_count(this->upside_down_enable and ax < 0 and ay < 0);
+                                std::tuple<int, int>(left, right) = this->_side_count(ax < 0 and ay < 0);
                                 if (left >= right) {
                                     newy = y;
                                 }
@@ -134,7 +134,6 @@ class MatrxiSand {
     private:
     int _width;
     int _height;
-    bool upside_down_enable;
     std::vector<bool> _grains;
 };
 
