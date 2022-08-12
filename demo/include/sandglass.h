@@ -11,9 +11,9 @@ typedef struct {
     int secs;
 } Countdown_TypeDef;
 
-class Sandglass2 {
+class Sandglass {
     public:
-    Sandglass2();
+    Sandglass();
 
     matrix_sand::MatrxiSand sand1;
     matrix_sand::MatrxiSand sand2;
@@ -25,9 +25,11 @@ class Sandglass2 {
     void start(Countdown_TypeDef* CountdownStruct);
     void pause(void);
     void resume(void);
+    void restart(Countdown_TypeDef* CountdownStruct);
     void IRAM_ATTR clock_update(void);
     void tick(void);
-    void stop(void);
+    void stop(bool is_shutdown=false);
+    void shutdown(void);
     void show_countdown(Countdown_TypeDef* CountdownStruct);
     bool is_activated(void);
     bool is_working(void);

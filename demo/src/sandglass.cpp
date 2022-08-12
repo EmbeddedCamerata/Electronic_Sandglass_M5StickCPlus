@@ -9,19 +9,18 @@
 
 static int get_total_drop_steps(int _start_layer);
 
-Sandglass2::Sandglass2(): \
+Sandglass::Sandglass(): \
     sand1(matrix_sand::MatrxiSand(_COLUMNS, _ROWS)), \
     sand2(matrix_sand::MatrxiSand(_COLUMNS, _ROWS)), \
     m1(LedMatrix(LEDMATRIX_RCLK, LEDMATRIX_D, LEDMATRIX_SRCLK1, false)), \
     m2(LedMatrix(LEDMATRIX_RCLK, LEDMATRIX_D, LEDMATRIX_SRCLK2, false)) {}; // auto_write=false is necessary
 
-void Sandglass2::init(void) {
+void Sandglass::init(void) {
     this->isActivated = false;
     this->isWorking = false;
 	this->isTick = false;
 
-	this->rest_time.mins = 0;
-	this->rest_time.secs = 0;
+	this->rest_time = {.mins = 0, .secs = 0};
     this->last_set_time = {.mins = 0, .secs = 0};
 
     this->updated1 = this->updated2 = false;
@@ -29,15 +28,13 @@ void Sandglass2::init(void) {
     this->need_lm_refresh = false;
 }
 
-void Sandglass2::start(Countdown_TypeDef* CountdownStruct) {
+void Sandglass::start(Countdown_TypeDef* CountdownStruct) {
     int sx, sy;
     this->isActivated = true;
     this->isWorking = true;
 	this->rest_time.mins = CountdownStruct->mins;
     this->rest_time.secs = CountdownStruct->secs;
     this->frame_refresh_interval = (int)((CountdownStruct->mins * 60 + CountdownStruct->secs)*1000 / get_total_drop_steps(LEDMATRIX_START_LAYER));
-
-    M5.Lcd.fillRect(10, 10, M5.Lcd.textWidth("Set"), M5.Lcd.fontHeight(), TFT_BLACK);
 
     this->sand1.clear();
     this->sand2.clear();
@@ -61,19 +58,40 @@ void Sandglass2::start(Countdown_TypeDef* CountdownStruct) {
     this->updated1 = this->updated2 = false;
 }
 
-void Sandglass2::pause(void) {
+void Sandglass::pause(void) {
     this->isWorking = false;
+    M5.Lcd.fillRect(10, 10, M5.Lcd.height(), M5.Lcd.fontHeight(), TFT_BLACK);
+    M5.Lcd.setCursor(10, 10);
+    M5.Lcd.setTextColor(TFT_WHITE);
+    M5.Lcd.setTextSize(2);
+    M5.Lcd.printf("Pause");
 }
 
-void Sandglass2::resume(void) {
+void Sandglass::resume(void) {
     this->isWorking = true;
+    M5.Lcd.fillRect(10, 10, M5.Lcd.height(), M5.Lcd.fontHeight(), TFT_BLACK);
+    M5.Lcd.setCursor(10, 10);
+    M5.Lcd.setTextColor(TFT_WHITE);
+    M5.Lcd.setTextSize(2);
+    M5.Lcd.printf("Resume");
 }
 
-void Sandglass2::tick(void) {
+void Sandglass::restart(Countdown_TypeDef* CountdownStruct) {
+    M5.Lcd.fillRect(10, 10, M5.Lcd.height(), M5.Lcd.fontHeight(), TFT_BLACK);
+    M5.Lcd.setCursor(10, 10);
+    M5.Lcd.setTextColor(TFT_WHITE);
+    M5.Lcd.setTextSize(2);
+    M5.Lcd.printf("Restart");
+
+    this->show_countdown(CountdownStruct);
+    this->start(CountdownStruct);
+}
+
+void Sandglass::tick(void) {
     this->isTick = true;
 }
 
-void IRAM_ATTR Sandglass2::clock_update(void) {
+void IRAM_ATTR Sandglass::clock_update(void) {
     this->rest_time.mins = (this->rest_time.secs == 0) ? this->rest_time.mins - 1 : this->rest_time.mins;
     this->rest_time.secs = (this->rest_time.secs == 0) ? 59 : this->rest_time.secs - 1;
     this->isTick = false;
@@ -86,7 +104,7 @@ void IRAM_ATTR Sandglass2::clock_update(void) {
 	}
 }
 
-void IRAM_ATTR Sandglass2::ledmatrix_update(void) {
+void IRAM_ATTR Sandglass::ledmatrix_update(void) {
     int i;
     M5.IMU.getAccelData(&this->accX, &this->accY, &this->accZ);
 
@@ -120,13 +138,12 @@ void IRAM_ATTR Sandglass2::ledmatrix_update(void) {
     this->need_lm_refresh = false;
 }
 
-void Sandglass2::stop(void) {
+void Sandglass::stop(bool is_shutdown) {
     this->isActivated = false;
     this->isWorking = false;
 	this->isTick = false;
 
-	this->rest_time.mins = 0;
-	this->rest_time.secs = 0;
+	this->rest_time = {.mins = 0, .secs = 0};
     this->last_set_time = {.mins = 0, .secs = 0};
 
     this->updated1 = this->updated2 = false;
@@ -138,14 +155,29 @@ void Sandglass2::stop(void) {
 
     this->m1.fill(0);
     this->m2.fill(0);
+    this->frame_refresh();
 
-    M5.Lcd.setCursor(10, 10);
-    M5.Lcd.setTextColor(TFT_WHITE);
-    M5.Lcd.setTextSize(2);
-    M5.Lcd.printf("Time up!");
+    if (is_shutdown) {
+        M5.Lcd.fillRect(10, 10, M5.Lcd.height(), M5.Lcd.fontHeight(), TFT_BLACK);
+        M5.Lcd.setCursor(10, 10);
+        M5.Lcd.setTextColor(TFT_WHITE);
+        M5.Lcd.setTextSize(2);
+        M5.Lcd.printf("Reset");
+    }
+    else {
+        M5.Lcd.fillRect(10, 10, M5.Lcd.height(), M5.Lcd.fontHeight(), TFT_BLACK);
+        M5.Lcd.setCursor(10, 10);
+        M5.Lcd.setTextColor(TFT_WHITE);
+        M5.Lcd.setTextSize(2);
+        M5.Lcd.printf("Time up!");
+    }
 }
 
-void Sandglass2::show_countdown(Countdown_TypeDef* CountdownStruct) {
+void Sandglass::shutdown(void) {
+    this->stop(true);
+}
+
+void Sandglass::show_countdown(Countdown_TypeDef* CountdownStruct) {
     String _time = "%02d:%02d\n";
 
     M5.Lcd.setCursor(60, M5.Lcd.height()/2 - 12);
@@ -161,15 +193,15 @@ void Sandglass2::show_countdown(Countdown_TypeDef* CountdownStruct) {
     M5.Lcd.printf(_time.c_str(), CountdownStruct->mins, CountdownStruct->secs);
 }
 
-bool Sandglass2::is_activated(void) {
+bool Sandglass::is_activated(void) {
     return this->isActivated;
 }
 
-bool Sandglass2::is_working(void) {
+bool Sandglass::is_working(void) {
     return this->isWorking;
 }
 
-void Sandglass2::update_matrix(LedMatrix *m, matrix_sand::MatrxiSand *s) {
+void Sandglass::update_matrix(LedMatrix *m, matrix_sand::MatrxiSand *s) {
     int i, j;
     for (i = 0; i < _COLUMNS; i++) {
         for (j = 0; j < _ROWS; j++) {
@@ -178,7 +210,7 @@ void Sandglass2::update_matrix(LedMatrix *m, matrix_sand::MatrxiSand *s) {
     }
 }
 
-void IRAM_ATTR Sandglass2::frame_refresh(void) {
+void IRAM_ATTR Sandglass::frame_refresh(void) {
     if (!this->isTick) {
         m1.show();
         m2.show();
@@ -200,7 +232,7 @@ int get_total_drop_steps(int _start_layer) {
     return _total;
 }
 
-void Sandglass2::random_idle(void) {
+void Sandglass::random_idle(void) {
     int _x, _y;
     _x = rand() % 8;
     _y = rand() % 8;
