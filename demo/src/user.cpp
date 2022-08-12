@@ -6,18 +6,14 @@
 #include "../include/bsp_timer.h"
 #include "../include/nonblock_delay.h"
 
-#define LEDMATRIX_D         GPIO_NUM_26	// Data pin
-#define LEDMATRIX_SRCLK1    GPIO_NUM_25	// Clock pin
-#define LEDMATRIX_SRCLK2    GPIO_NUM_33 // Clock pin
-#define LEDMATRIX_RCLK		GPIO_NUM_0  // Latch pin
 #define MUTEX_PIN           GPIO_NUM_36 // Need set to mode float input
 
 TFT_eSprite Disbuff = TFT_eSprite(&M5.Lcd);
 Countdown_TypeDef CountdownStruct = {.mins = 0, .secs = 0};
 Sandglass sandglass;
-hw_timer_t* rtc_timer = NULL;
+hw_timer_t* clock_timer = NULL;
 hw_timer_t* update_timer = NULL;
-NonBlockDelay d, d2;
+NonBlockDelay d1, d2;
 bool _is_break = false;
 
 static void Lcd_Setup(void);
@@ -31,7 +27,6 @@ static void start_timers(void);
 void User_Setup(void) {
     int ret;
     pinMode(M5_LED, OUTPUT);
-    pinMode(M5_BUTTON_HOME, INPUT_PULLUP);
     gpio_pulldown_dis(MUTEX_PIN);
     gpio_pullup_dis(MUTEX_PIN);
 
@@ -53,7 +48,6 @@ void User_Loop(void) {
     while (1) {
         if (sandglass.isTick) {
             sandglass.clock_update();
-            Disbuff.pushSprite(0, 0);
         }
 
         if (sandglass.need_lm_refresh) {
@@ -61,8 +55,7 @@ void User_Loop(void) {
         }
         
         if (not sandglass.is_activated()) {
-            // Stop the timers
-            timerStop(rtc_timer);
+            timerStop(clock_timer);
             timerStop(update_timer);
             break;
         }
@@ -94,7 +87,7 @@ static void Key_Handle_inIdle(void) {
     M5.Lcd.printf("Set");
     Disbuff.pushSprite(0, 0);
 
-    d.Delay(500);
+    d1.Delay(500);
 
     while (1) {
         M5.update();
@@ -129,9 +122,9 @@ static void Key_Handle_inIdle(void) {
             }
         }
 
-        if (d.Timeout()) {
+        if (d1.Timeout()) {
             sandglass.random_idle();
-            d.Delay(500);
+            d1.Delay(500);
         }
         
         sandglass.frame_refresh();
@@ -144,8 +137,8 @@ static void Key_Handle_inIdle(void) {
 
 /*
     Sacn buttons when sandglass is working.
-    Button A for pause/resume and loog press for restart
-    Button B for reset (to the initial value)
+    Button A for pause/resume and loog press for break and reset
+    Button B for restart (from the initial countdown)
 */
 static void Key_Handle_inWorking(void) {
     M5.update();
@@ -153,7 +146,7 @@ static void Key_Handle_inWorking(void) {
         if (sandglass.is_working()) {
             sandglass.pause();
             // Pause the timers
-            timerStop(rtc_timer);
+            timerStop(clock_timer);
             timerStop(update_timer);
             // Delay 1s for displaying the "Pause"
             d2.Delay(1000);
@@ -161,14 +154,14 @@ static void Key_Handle_inWorking(void) {
         else {
             sandglass.resume();
             // Resume the timers
-            timerStart(rtc_timer);
+            timerStart(clock_timer);
             timerStart(update_timer);
             d2.Delay(1000);
         }
     }
     else if (M5.BtnA.wasReleasefor(800)) {
         // Break to reset
-        timerStop(rtc_timer);
+        timerStop(clock_timer);
         timerStop(update_timer);
         sandglass.shutdown();
         d2.Delay(1000);
@@ -177,7 +170,7 @@ static void Key_Handle_inWorking(void) {
     }
     else if (M5.BtnB.wasReleased()) {
         // Restart from the initial
-        timerStop(rtc_timer);
+        timerStop(clock_timer);
         timerStop(update_timer);
 
         sandglass.restart(&CountdownStruct);
@@ -211,7 +204,7 @@ static void Lcd_Setup(void) {
     M5.Lcd.setCursor(60, 80);
     M5.Lcd.setTextColor(TFT_RED);
     M5.Lcd.setTextSize(2);
-    M5.Lcd.printf("Hello World\n");
+    M5.Lcd.printf("Hello World");
     Disbuff.pushSprite(0, 0);
     delay(500);
     M5.Lcd.fillScreen(TFT_BLACK);
@@ -221,18 +214,19 @@ static void Lcd_Setup(void) {
     Creat or start this two timers. If created, just restart and start them.
 */
 static void start_timers(void) {
-    if (rtc_timer == NULL) {
-        rtc_timer = timer1s(0, clock_update, true);
-        if (rtc_timer == NULL) {
-            Serial.println("Start rtc_timer error!");
+    if (clock_timer == NULL) {
+        clock_timer = timer1s(0, clock_update, true);   // Using Timer 0
+        if (clock_timer == NULL) {
+            Serial.println("Start clock_timer error!");
         }
     }
     else {
-        timerRestart(rtc_timer);
-        timerStart(rtc_timer);
+        timerRestart(clock_timer);
+        timerStart(clock_timer);
     }
     
     if (update_timer == NULL) {
+        // Using Timer 1
         update_timer = milli_timer(sandglass.frame_refresh_interval, 1, ledmatrix_refresh, true);
         if (update_timer == NULL) {
             Serial.println("Start update_timer error!");

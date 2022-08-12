@@ -5,7 +5,6 @@
 #define LEDMATRIX_SRCLK1    GPIO_NUM_25	// Clock pin
 #define LEDMATRIX_SRCLK2    GPIO_NUM_33 // Clock pin
 #define LEDMATRIX_RCLK		GPIO_NUM_0  // Latch pin
-#define MUTEX_PIN           GPIO_NUM_36 // Remember float input
 
 static int get_total_drop_steps(int _start_layer);
 

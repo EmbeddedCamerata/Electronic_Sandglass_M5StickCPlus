@@ -36,7 +36,7 @@ class Sandglass {
     bool isTick;                        // Update led matrices when in the second interval and after
 
     // Led matrices related
-    void random_idle(void);             // Random flash in led matrices when in idle
+    void random_idle(void);             // When in idle, two led matrices blink randomly
     void IRAM_ATTR ledmatrix_update(void);
     void IRAM_ATTR frame_refresh(void); // Frame refreshment
     int frame_refresh_interval;         // times per ms
@@ -55,8 +55,5 @@ class Sandglass {
     Countdown_TypeDef rest_time;        // Rest time of countdown: mins and secs
     Countdown_TypeDef last_set_time;    // Record the last time of countdown/settime
 };
-
-void common_test(void);
-void test(void);
 
 #endif
