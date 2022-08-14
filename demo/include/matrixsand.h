@@ -35,6 +35,7 @@ class MatrxiSand {
     std::tuple<int, int> _side_count(bool upside_down=false) {
         int left = 0, right = 0;
         int x, y;
+
         for (x = 0; x < this->_width; x++) {
             for (y = 0; y < this->_height; y++) {
                 if (x != y and this->__getitem__(x, y)) {
@@ -47,6 +48,7 @@ class MatrxiSand {
                 }
             }
         }
+        
         if (upside_down) {
             return std::tuple<int, int>(right ,left);
         }

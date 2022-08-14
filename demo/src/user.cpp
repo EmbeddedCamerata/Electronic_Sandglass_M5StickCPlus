@@ -6,7 +6,8 @@
 #include "../include/bsp_timer.h"
 #include "../include/nonblock_delay.h"
 
-#define MUTEX_PIN           GPIO_NUM_36 // Need set to mode float input
+#define MUTEX_PIN       GPIO_NUM_36           // Need set to mode float input
+#define DEBUG_MODE
 
 TFT_eSprite Disbuff = TFT_eSprite(&M5.Lcd);
 Countdown_TypeDef CountdownStruct = {.mins = 0, .secs = 0};
@@ -73,6 +74,12 @@ void User_Loop(void) {
             M5.Lcd.fillRect(10, 10, M5.Lcd.height(), M5.Lcd.fontHeight(), TFT_BLACK);
         }
 
+#ifdef DEBUG_MODE
+        M5.Lcd.setCursor(10, 100);
+        M5.Lcd.setTextColor(TFT_WHITE);
+        M5.Lcd.setTextSize(1);
+        M5.Lcd.printf("%d ms", sandglass.frame_refresh_interval);
+#endif
         Disbuff.pushSprite(0, 0);
     }
     delay(1000);
@@ -199,9 +206,9 @@ static void led_heartbeat(void) {
 }
 
 static void Lcd_Setup(void) {
-    M5.Lcd.setRotation(1);
+    M5.Lcd.setRotation(1);          // Horizontal view
     M5.Lcd.fillScreen(TFT_BLACK);
-    M5.Lcd.setCursor(60, 80);
+    M5.Lcd.setCursor(M5.Lcd.width()/2 - M5.Lcd.textWidth("Hello World"), M5.Lcd.height()/2 - M5.Lcd.fontHeight()/2);
     M5.Lcd.setTextColor(TFT_RED);
     M5.Lcd.setTextSize(2);
     M5.Lcd.printf("Hello World");

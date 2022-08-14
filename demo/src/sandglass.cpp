@@ -185,7 +185,7 @@ void Sandglass::show_countdown(Countdown_TypeDef* CountdownStruct) {
     M5.Lcd.setTextSize(4);
 
     if (this->last_set_time.mins != CountdownStruct->mins or this->last_set_time.secs != CountdownStruct->secs) {
-        M5.Lcd.fillRect(60, M5.Lcd.height()/2 - 12, M5.Lcd.textWidth(_time), M5.Lcd.fontHeight(), TFT_BLACK);
+        M5.Lcd.fillRect(M5.Lcd.width()/2 - M5.Lcd.textWidth(_time), M5.Lcd.height()/2 - M5.Lcd.fontHeight()/2, M5.Lcd.textWidth(_time), M5.Lcd.fontHeight(), TFT_BLACK);
         this->last_set_time.mins = CountdownStruct->mins;
         this->last_set_time.secs = CountdownStruct->secs;
     }

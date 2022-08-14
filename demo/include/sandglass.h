@@ -39,7 +39,7 @@ class Sandglass {
     void random_idle(void);             // When in idle, two led matrices blink randomly
     void IRAM_ATTR ledmatrix_update(void);
     void IRAM_ATTR frame_refresh(void); // Frame refreshment
-    int frame_refresh_interval;         // times per ms
+    int frame_refresh_interval;         // Interval of frame refreshement, unit ms
     bool need_lm_refresh;               // Refresh led matrices data
     
     private:
