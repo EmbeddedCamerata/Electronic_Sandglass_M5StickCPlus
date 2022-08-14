@@ -7,7 +7,7 @@
 #include "../include/nonblock_delay.h"
 
 #define MUTEX_PIN       GPIO_NUM_36           // Need set to mode float input
-#define DEBUG_MODE
+// #define DEBUG_MODE
 
 TFT_eSprite Disbuff = TFT_eSprite(&M5.Lcd);
 Countdown_TypeDef CountdownStruct = {.mins = 0, .secs = 0};
@@ -87,10 +87,10 @@ void User_Loop(void) {
 
 static void Key_Handle_inIdle(void) {
 
-    M5.Lcd.fillRect(10, 10, M5.Lcd.height(), M5.Lcd.fontHeight(), TFT_BLACK);
     M5.Lcd.setCursor(10, 10);
-    M5.Lcd.setTextColor(TFT_WHITE);
     M5.Lcd.setTextSize(2);
+    M5.Lcd.fillRect(10, 10, M5.Lcd.height(), M5.Lcd.fontHeight(), TFT_BLACK);
+    M5.Lcd.setTextColor(TFT_WHITE);
     M5.Lcd.printf("Set");
     Disbuff.pushSprite(0, 0);
 
@@ -155,6 +155,7 @@ static void Key_Handle_inWorking(void) {
             // Pause the timers
             timerStop(clock_timer);
             timerStop(update_timer);
+
             // Delay 1s for displaying the "Pause"
             d2.Delay(1000);
         }
@@ -163,25 +164,26 @@ static void Key_Handle_inWorking(void) {
             // Resume the timers
             timerStart(clock_timer);
             timerStart(update_timer);
+
             d2.Delay(1000);
         }
     }
     else if (M5.BtnA.wasReleasefor(800)) {
         // Break to reset
+        sandglass.stop(true);
         timerStop(clock_timer);
         timerStop(update_timer);
-        sandglass.shutdown();
-        d2.Delay(1000);
+
         // Set the flag to break in while loop
         _is_break = true;
     }
     else if (M5.BtnB.wasReleased()) {
         // Restart from the initial
+        sandglass.restart(&CountdownStruct);
         timerStop(clock_timer);
         timerStop(update_timer);
-
-        sandglass.restart(&CountdownStruct);
         start_timers();
+
         d2.Delay(1000);
     }
 }
@@ -208,17 +210,19 @@ static void led_heartbeat(void) {
 static void Lcd_Setup(void) {
     M5.Lcd.setRotation(1);          // Horizontal view
     M5.Lcd.fillScreen(TFT_BLACK);
-    M5.Lcd.setCursor(M5.Lcd.width()/2 - M5.Lcd.textWidth("Hello World"), M5.Lcd.height()/2 - M5.Lcd.fontHeight()/2);
-    M5.Lcd.setTextColor(TFT_RED);
     M5.Lcd.setTextSize(2);
+    M5.Lcd.setCursor(M5.Lcd.width()/2 - M5.Lcd.textWidth("Hello World")/2, M5.Lcd.height()/2 - M5.Lcd.fontHeight()/2);
+    M5.Lcd.setTextColor(TFT_RED);
     M5.Lcd.printf("Hello World");
     Disbuff.pushSprite(0, 0);
+
     delay(500);
     M5.Lcd.fillScreen(TFT_BLACK);
 }
 
 /*
-    Creat or start this two timers. If created, just restart and start them.
+    Creat or start this clock_timer. If created, just restart and start it.
+    Attention. Because of reseting function, update_timer need to be created every time.
 */
 static void start_timers(void) {
     if (clock_timer == NULL) {
@@ -232,15 +236,8 @@ static void start_timers(void) {
         timerStart(clock_timer);
     }
     
+    update_timer = milli_timer(sandglass.frame_refresh_interval, 1, ledmatrix_refresh, true);
     if (update_timer == NULL) {
-        // Using Timer 1
-        update_timer = milli_timer(sandglass.frame_refresh_interval, 1, ledmatrix_refresh, true);
-        if (update_timer == NULL) {
-            Serial.println("Start update_timer error!");
-        }
-    }
-    else {
-        timerRestart(update_timer);
-        timerStart(update_timer);
+        Serial.println("Start update_timer error!");
     }
 }

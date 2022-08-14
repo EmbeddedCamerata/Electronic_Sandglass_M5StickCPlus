@@ -29,7 +29,6 @@ class Sandglass {
     void IRAM_ATTR clock_update(void);
     void tick(void);
     void stop(bool is_shutdown=false);
-    void shutdown(void);
     void show_countdown(Countdown_TypeDef* CountdownStruct);
     bool is_activated(void);
     bool is_working(void);

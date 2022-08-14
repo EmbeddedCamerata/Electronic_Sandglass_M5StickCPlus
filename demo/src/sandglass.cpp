@@ -68,18 +68,18 @@ void Sandglass::pause(void) {
 
 void Sandglass::resume(void) {
     this->isWorking = true;
-    M5.Lcd.fillRect(10, 10, M5.Lcd.height(), M5.Lcd.fontHeight(), TFT_BLACK);
     M5.Lcd.setCursor(10, 10);
-    M5.Lcd.setTextColor(TFT_WHITE);
     M5.Lcd.setTextSize(2);
+    M5.Lcd.fillRect(10, 10, M5.Lcd.height(), M5.Lcd.fontHeight(), TFT_BLACK);
+    M5.Lcd.setTextColor(TFT_WHITE);
     M5.Lcd.printf("Resume");
 }
 
 void Sandglass::restart(Countdown_TypeDef* CountdownStruct) {
-    M5.Lcd.fillRect(10, 10, M5.Lcd.height(), M5.Lcd.fontHeight(), TFT_BLACK);
     M5.Lcd.setCursor(10, 10);
-    M5.Lcd.setTextColor(TFT_WHITE);
     M5.Lcd.setTextSize(2);
+    M5.Lcd.fillRect(10, 10, M5.Lcd.height(), M5.Lcd.fontHeight(), TFT_BLACK);
+    M5.Lcd.setTextColor(TFT_WHITE);
     M5.Lcd.printf("Restart");
 
     this->show_countdown(CountdownStruct);
@@ -156,36 +156,28 @@ void Sandglass::stop(bool is_shutdown) {
     this->m2.fill(0);
     this->frame_refresh();
 
+    M5.Lcd.setCursor(10, 10);
+    M5.Lcd.setTextSize(2);
+    M5.Lcd.fillRect(10, 10, M5.Lcd.height(), M5.Lcd.fontHeight(), TFT_BLACK);
+    M5.Lcd.setTextColor(TFT_WHITE);
+
     if (is_shutdown) {
-        M5.Lcd.fillRect(10, 10, M5.Lcd.height(), M5.Lcd.fontHeight(), TFT_BLACK);
-        M5.Lcd.setCursor(10, 10);
-        M5.Lcd.setTextColor(TFT_WHITE);
-        M5.Lcd.setTextSize(2);
         M5.Lcd.printf("Reset");
     }
     else {
-        M5.Lcd.fillRect(10, 10, M5.Lcd.height(), M5.Lcd.fontHeight(), TFT_BLACK);
-        M5.Lcd.setCursor(10, 10);
-        M5.Lcd.setTextColor(TFT_WHITE);
-        M5.Lcd.setTextSize(2);
         M5.Lcd.printf("Time up!");
     }
 }
 
-void Sandglass::shutdown(void) {
-    this->stop(true);
-}
-
 void Sandglass::show_countdown(Countdown_TypeDef* CountdownStruct) {
-    String _time = "%02d:%02d\n";
+    String _time = "%02d:%02d";
 
-    M5.Lcd.setCursor(60, M5.Lcd.height()/2 - 12);
-    M5.Lcd.setTextDatum(TL_DATUM);
-    M5.Lcd.setTextColor(TFT_RED);
     M5.Lcd.setTextSize(4);
+    M5.Lcd.setCursor(M5.Lcd.width()/2 - M5.Lcd.textWidth("99:99")/2, M5.Lcd.height()/2 - M5.Lcd.fontHeight()/2);
+    M5.Lcd.setTextColor(TFT_RED);
 
     if (this->last_set_time.mins != CountdownStruct->mins or this->last_set_time.secs != CountdownStruct->secs) {
-        M5.Lcd.fillRect(M5.Lcd.width()/2 - M5.Lcd.textWidth(_time), M5.Lcd.height()/2 - M5.Lcd.fontHeight()/2, M5.Lcd.textWidth(_time), M5.Lcd.fontHeight(), TFT_BLACK);
+        M5.Lcd.fillRect(M5.Lcd.width()/2 - M5.Lcd.textWidth("99:99")/2, M5.Lcd.height()/2 - M5.Lcd.fontHeight()/2, M5.Lcd.textWidth("99:99"), M5.Lcd.fontHeight(), TFT_BLACK);
         this->last_set_time.mins = CountdownStruct->mins;
         this->last_set_time.secs = CountdownStruct->secs;
     }
