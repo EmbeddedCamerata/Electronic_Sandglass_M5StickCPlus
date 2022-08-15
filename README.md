@@ -2,7 +2,7 @@
 
 
 
-## ⚙️依赖
+## ⚙️ 依赖
 
 1. [M5StickC Plus SDK](https://github.com/m5stack/M5StickC-Plus)，通过Github或Arduino下载库
 
@@ -12,7 +12,7 @@
 
 3. 两块LED灯板、杜邦线若干
 
-## 📄文件结构
+## 📄 文件结构
 
 ├─ demo，独立的电子沙漏倒计时工程
 
@@ -66,13 +66,13 @@
 
 └─ StickC_Plus_20200616.pdf，M5StickC Plus 电路原理图
 
-## ⛓️硬件结构
+## ⛓️ 硬件结构
 
 两块LED矩阵上有两片74595，可以使用软SPI方式驱动灯板。限于M5引出的IO口有限（且下方的IO口用杜邦线引出十分不牢固），两路SPI总线(data、clock、latch)可以共用数据与Latch线，而不共用时钟线，通过面包板连接。
 
 左下角LED灯板为沙漏⌛的上方，其沙粒从右下角流至第二块灯板的左上角。
 
-![硬件结构图](./img/IMG_20220812_103655.jpg)
+![硬件结构图](./img/IMG_20220812_103655.jpg#pic_center =600x)
 
 具体连接关系：
 
@@ -90,15 +90,15 @@ gpio_pulldown_dis(MUTEX_PIN);
 gpio_pullup_dis(MUTEX_PIN);
 ```
 
-## ⚒️工程
+## ⚒️ 工程
 
 工程代码讲解及效果参见：
 
-1. :point_right: [CSDN工程详解：基于M5StickC Plus的电子沙漏(LCD+软SPI+Arduino/C++)](https://blog.csdn.net/weixin_46422143/article/details/126303016)
-2. :point_right: [B站：工程演示](https://www.bilibili.com/video/BV1ed4y1o7bK)、
+1. [CSDN工程详解：基于M5StickC Plus的电子沙漏(LCD+软SPI+Arduino/C++)](https://blog.csdn.net/weixin_46422143/article/details/126303016)
+2. B站：工程演示](https://www.bilibili.com/video/BV1ed4y1o7bK)
 3. 重力电子沙漏部分未作展示
 
-## 参考
+## 📚 参考
 
 1. [M5StickC API](https://docs.m5stack.com/zh_CN/api/stickc/system_m5stickc)
 2. 软SPI：[bxparks/AceSPI](https://github.com/bxparks/AceSPI)
