@@ -1,15 +1,11 @@
 # Electronic Sandglass of M5StickC Plus
 
-
-
 ## ⚙️ 依赖
 
 1. [M5StickC Plus SDK](https://github.com/m5stack/M5StickC-Plus)，通过Github或Arduino下载库
-
 2. Arduino或VSCode
 
-	:point_right: 本工程基于VSCode与Arduino开发，在此环境下，工程可直接编译通过。在Arduino IDE下，可能存在头文件路径的问题，未验证。
-
+   👉 本工程基于VSCode与Arduino开发，在此环境下，工程可直接编译通过。在Arduino IDE下，可能存在头文件路径的问题，未验证。
 3. 两块LED灯板、杜邦线若干
 
 ## 📄 文件结构
@@ -72,17 +68,17 @@
 
 左下角LED灯板为沙漏⌛的上方，其沙粒从右下角流至第二块灯板的左上角。
 
-![硬件结构图](./img/IMG_20220812_103655.jpg#pic_center =600x)
+<img src="./img/IMG_20220812_103655.jpg" alt="硬件结构图" style="zoom:80%;" />
 
 具体连接关系：
 
 | 引脚 |           含义           | 引脚编号 |
 | :--: | :----------------------: | :------: |
-| G26  |         数据信号         |    26    |
-| G25  |        时钟信号1         |    25    |
-| G33  |        时钟信号2         |    33    |
-|  G0  |        Latch信号         |    0     |
-| G36  | 复用IO，需要设置浮空输入 |    36    |
+| G26 |         数据信号         |    26    |
+| G25 |        时钟信号1        |    25    |
+| G33 |        时钟信号2        |    33    |
+|  G0  |        Latch信号        |    0    |
+| G36 | 复用IO，需要设置浮空输入 |    36    |
 
 ```c++
 #define MUTEX_PIN	GPIO_NUM_36
