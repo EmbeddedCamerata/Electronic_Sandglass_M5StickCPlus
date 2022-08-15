@@ -88,7 +88,7 @@ gpio_pullup_dis(MUTEX_PIN);
 
 ## 📦 软件结构
 
-软件工程组成：软SPI驱动、LED矩阵驱动、矩阵沙的动态效果计算、电子沙漏顶层类、定时器（与中断服务）及非阻塞延时的功能函数。软件主要的工作流程如图所示。
+软件工程组成：软SPI驱动、LED矩阵驱动、矩阵沙的动态效果计算、电子沙漏顶层类、定时器（与中断服务）及非阻塞延时的功能函数。软件主要的工作流程如图所示：
 
 <img src="./demo/process.png" alt="软件主要工作流程图" style="zoom:80%;" />
 
@@ -96,7 +96,7 @@ gpio_pullup_dis(MUTEX_PIN);
 
 工程代码讲解及效果参见：
 
-1. [CSDN工程详解：基于M5StickC Plus的电子沙漏(LCD+软SPI+Arduino/C++)](https://blog.csdn.net/weixin_46422143/article/details/126303016)
+1. [CSDN工程详解：基于M5StickC Plus的可定时电子沙漏(LCD+软SPI+Arduino/C++)](https://blog.csdn.net/weixin_46422143/article/details/126303016)
 2. [B站：工程演示](https://www.bilibili.com/video/BV1ed4y1o7bK)
 3. 重力电子沙漏部分未作展示
 
