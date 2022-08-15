@@ -4,11 +4,11 @@
 
 1. [M5StickC Plus SDK](https://github.com/m5stack/M5StickC-Plus)，通过Github或Arduino下载库
 2. Arduino或VSCode
-
-   👉 本工程基于VSCode与Arduino开发，在此环境下，工程可直接编译通过。在Arduino IDE下，可能存在头文件路径的问题，未验证。
 3. 两块LED灯板、杜邦线若干
 
-## 📄 文件结构
+👉 本工程基于VSCode与Arduino开发，在此环境下，工程可直接编译通过。在Arduino IDE下，可能存在头文件路径的问题，未验证。
+
+## 📄 文档结构
 
 ├─ demo，独立的电子沙漏倒计时工程
 
@@ -70,7 +70,7 @@
 
 <img src="./img/IMG_20220812_103655.jpg" alt="硬件连接图" style="zoom:67%;" />
 
-具体连接关系：
+LED灯板与M5的具体连接关系：
 
 | 引脚 |           含义           | 引脚编号 |
 | :--: | :----------------------: | :------: |
@@ -86,12 +86,18 @@ gpio_pulldown_dis(MUTEX_PIN);
 gpio_pullup_dis(MUTEX_PIN);
 ```
 
-## ⚒️ 工程
+## 📦 软件结构
+
+软件工程组成：软SPI驱动、LED矩阵驱动、矩阵沙的动态效果计算、电子沙漏顶层类、定时器（与中断服务）及非阻塞延时的功能函数。软件主要的工作流程如图所示。
+
+<img src="./demo/process.png" alt="软件主要工作流程图" style="zoom:80%;" />
+
+## 🛠 工程
 
 工程代码讲解及效果参见：
 
 1. [CSDN工程详解：基于M5StickC Plus的电子沙漏(LCD+软SPI+Arduino/C++)](https://blog.csdn.net/weixin_46422143/article/details/126303016)
-2. B站：工程演示](https://www.bilibili.com/video/BV1ed4y1o7bK)
+2. [B站：工程演示](https://www.bilibili.com/video/BV1ed4y1o7bK)
 3. 重力电子沙漏部分未作展示
 
 ## 📚 参考
