@@ -1,13 +1,9 @@
 #include "../include/ledmatrix.h"
 
 void LedMatrix::pixel(int x, int y, bool filled) {
-    if (x < 0 or x > 7) {
-        return;
-    }
-
-    if (y < 0 or y > 7) {
-        return;
-    }
+    assert(x >= 0 and x <= 7);
+    assert(y >= 0 and y <= 7);
+    
     this->_pixel(x, y, filled);
 }
 
